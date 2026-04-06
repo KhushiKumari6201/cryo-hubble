@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khushi Kumari | Full Stack Developer Portfolio</title>
+    <meta name="description" content="Portfolio of Khushi Kumari - Full Stack Developer, Computer Science Engineer, and Problem Solver specializing in React, Node.js, and System Design.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- ScrollReveal -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+</head>
+
+<body class="dark-theme">
+    <!-- Loader -->
+    <div class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">KHUSHI<span>.</span></a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#stats">Stats</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="nav-extras">
+                <button id="themeToggle" class="theme-btn" aria-label="Toggle Dark Mode">
+                    <i class="ph ph-moon"></i>
+                </button>
+                <div class="nav-toggle" id="navToggle">
+                    <i class="ph ph-list"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Nav -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#stats">Stats</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
+        <div class="container hero-main">
+            <div class="hero-text">
+                <span class="badge">Available for Work</span>
+                <h2>Hello, I'm <span class="name">Khushi Kumari 👋</span></h2>
+                <h1>I am <span id="typing-text"></span></h1>
+                <p>I build fast, scalable, and user-friendly web applications using modern technologies. Passionate about coding, system design, and solving real-world problems.</p>
+                <div class="hero-btns">
+                    <a href="#projects" class="btn btn-primary">View My Work</a>
+                    <a href="#contact" class="btn btn-outline">Contact Me</a>
+                </div>
+                <div class="hero-socials">
+                    <a href="https://github.com/" target="_blank" title="GitHub"><i class="ph ph-github-logo"></i></a>
+                    <a href="https://linkedin.com/in/" target="_blank" title="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="mailto:your-email@gmail.com" title="Email"><i class="ph ph-envelope"></i></a>
+                    <a href="#" title="Portfolio"><i class="ph ph-globe"></i></a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="profile-frame">
+                    <div class="image-overlay"></div>
+                    <div class="placeholder-img">
+                        <i class="ph ph-user-circle"></i>
+                    </div>
+                </div>
+                <div class="code-badge">
+                    <i class="ph ph-code"></i>
+                    <span>&lt;FullStack /&gt;</span>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-down">
+            <span class="scroll-text">SCROLL</span>
+            <div class="mouse"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-image-side">
+                    <div class="experience-card">
+                        <span class="number">B.Tech</span>
+                        <span class="label">CSE Student</span>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stat-item">
+                            <i class="ph ph-check-circle"></i>
+                            <span>200+ Problems Solved</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="ph ph-rocket-launch"></i>
+                            <span>5+ Projects Done</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-content">
+                    <p class="highlight">I am a Computer Science Engineering student with a strong passion for web development and software engineering.</p>
+                    <p>I started my journey with curiosity about how websites work, and now I build full-stack applications using technologies like React, Node.js, and MongoDB.</p>
+                    <p>I enjoy solving real-world problems, learning new technologies, and improving my coding skills every day.</p>
+                    <p>Currently, I am preparing for software development roles and enhancing my knowledge in Data Structures, Algorithms, and System Design.</p>
+                    <div class="info-badges">
+                        <div class="info-badge"><i class="ph ph-graduation-cap"></i> CSE Student</div>
+                        <div class="info-badge"><i class="ph ph-map-pin"></i> India</div>
+                        <div class="info-badge"><i class="ph ph-calendar"></i> Final Year</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills section bg-alt">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Technical Skills</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="skills-wrapper">
+                <div class="skills-column">
+                    <h3>Core Development</h3>
+                    <div class="skill-item reveal">
+                        <div class="skill-info">
+                            <span>React & JavaScript</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" data-width="90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item reveal">
+                        <div class="skill-info">
+                            <span>Backend (Node.js/Express)</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" data-width="85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item reveal">
+                        <div class="skill-info">
+                            <span>Data Structures & Algo</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" data-width="80%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="skills-column">
+                    <h3>Tools & Technologies</h3>
+                    <div class="tool-tags reveal">
+                        <div class="tool-tag"><i class="ph ph-git-branch"></i> Git & GitHub</div>
+                        <div class="tool-tag"><i class="ph ph-terminal"></i> VS Code</div>
+                        <div class="tool-tag"><i class="ph ph-file-code"></i> Postman</div>
+                        <div class="tool-tag"><i class="ph ph-cube"></i> Docker</div>
+                        <div class="tool-tag"><i class="ph ph-cloud"></i> AWS</div>
+                        <div class="tool-tag"><i class="ph ph-database"></i> MySQL</div>
+                        <div class="tool-tag"><i class="ph ph-leaf"></i> MongoDB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">My Projects</h2>
+                <div class="title-underline"></div>
+            </div>
+            
+            <div class="filter-btns">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="React">React</button>
+                <button class="filter-btn" data-filter="Python">Python</button>
+                <button class="filter-btn" data-filter="JS">JS / Next.js</button>
+            </div>
+
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Fetching from JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats-section section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card reveal">
+                    <i class="ph ph-code-block"></i>
+                    <h3 class="counter" data-target="200">0</h3>
+                    <p>DSA Problems Solved</p>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="ph ph-layout"></i>
+                    <h3 class="counter" data-target="5">0</h3>
+                    <p>Projects Completed</p>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="ph ph-git-merge"></i>
+                    <h3 class="counter" data-target="150">0</h3>
+                    <p>GitHub Contributions</p>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="ph ph-lightning"></i>
+                    <h3 class="counter" data-target="10">0</h3>
+                    <p>Technologies Learned</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section bg-alt">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="title-underline"></div>
+                <p>Let's build something amazing together 🚀</p>
+            </div>
+            
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Let's Talk</h3>
+                    <p>I am always open to new opportunities, collaborations, and innovative ideas.</p>
+                    <div class="contact-methods">
+                        <div class="contact-item">
+                            <i class="ph ph-envelope"></i>
+                            <span>your-email@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ph ph-map-pin"></i>
+                            <span>India</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form-container">
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <input type="text" placeholder="Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message <i class="ph ph-paper-plane-right"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">KHUSHI<span>.</span></div>
+                <p>&copy; 2024 Khushi Kumari. Learning System Design & Cloud.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="ph ph-github-logo"></i></a>
+                    <a href="#"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="#"><i class="ph ph-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+</body>
+
+</html>

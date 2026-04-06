@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "name": "Eco-Track: Carbon Footprint Tracker",
+        "category": "React",
+        "description": "A web app to track and reduce carbon footprint with real-time analytics.",
+        "tech": ["React", "Node.js", "MongoDB"],
+        "features": ["Dashboard", "Charts", "User Tracking"],
+        "image": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        "github": "https://github.com/khushi-kumari/eco-track",
+        "live": "https://eco-track-demo.vercel.app"
+    },
+    {
+        "id": 2,
+        "name": "DevResource Hub",
+        "category": "JS",
+        "description": "A platform where developers can share learning resources and roadmaps.",
+        "tech": ["Next.js", "Firebase"],
+        "features": ["Upload resources", "Search", "Categories"],
+        "image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        "github": "https://github.com/khushi-kumari/dev-hub",
+        "live": "https://dev-resource-hub.web.app"
+    },
+    {
+        "id": 3,
+        "name": "Smart Attendance System",
+        "category": "Python",
+        "description": "Face recognition-based attendance system for classrooms.",
+        "tech": ["Python", "OpenCV", "Flask"],
+        "features": ["Face detection", "Auto attendance", "Reports"],
+        "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        "github": "https://github.com/khushi-kumari/face-attendance",
+        "live": "#"
+    }
+]
