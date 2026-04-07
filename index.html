@@ -22,11 +22,20 @@
     <script src="https://unpkg.com/scrollreveal"></script>
 </head>
 
-<body class="dark-theme">
+<body>
     <!-- Loader -->
     <div class="loader-wrapper">
         <div class="loader"></div>
     </div>
+
+    <!-- Background Layers -->
+    <div class="bg-layers">
+        <div class="layer layer-1"></div>
+        <div class="layer layer-2"></div>
+        <div class="layer layer-3"></div>
+    </div>
+    <div class="bg-shards"></div>
+    <div class="mouse-glow"></div>
 
     <!-- Navigation -->
     <nav id="navbar">
@@ -41,8 +50,10 @@
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="nav-extras">
-                <button id="themeToggle" class="theme-btn" aria-label="Toggle Dark Mode">
-                    <i class="ph ph-moon"></i>
+                <button id="themeToggle" class="mode-logo-btn" aria-label="Toggle Theme">
+                    <div class="mode-icon-wrapper">
+                        🌙
+                    </div>
                 </button>
                 <div class="nav-toggle" id="navToggle">
                     <i class="ph ph-list"></i>
@@ -78,24 +89,30 @@
                 <div class="hero-btns">
                     <a href="#projects" class="btn btn-primary">View My Work</a>
                     <a href="#contact" class="btn btn-outline">Contact Me</a>
+                    <a href="#" class="btn btn-outline" download>Resume <i class="ph ph-download-simple"></i></a>
                 </div>
                 <div class="hero-socials">
-                    <a href="https://github.com/" target="_blank" title="GitHub"><i class="ph ph-github-logo"></i></a>
-                    <a href="https://linkedin.com/in/" target="_blank" title="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
-                    <a href="mailto:your-email@gmail.com" title="Email"><i class="ph ph-envelope"></i></a>
+                    <a href="https://github.com/KhushiKumari6201" target="_blank" title="GitHub"><i class="ph ph-github-logo"></i></a>
+                    <a href="https://linkedin.com/in/khushi-k-642b57323" target="_blank" title="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="mailto:khushikri.92637@gmail.com" title="Email"><i class="ph ph-envelope"></i></a>
                     <a href="#" title="Portfolio"><i class="ph ph-globe"></i></a>
                 </div>
             </div>
             <div class="hero-image">
-                <div class="profile-frame">
-                    <div class="image-overlay"></div>
-                    <div class="placeholder-img">
-                        <i class="ph ph-user-circle"></i>
+                <div class="profile-container">
+                    <div class="profile-frame">
+                        <img src="assets/profile.png" alt="Khushi Kumari" class="profile-img">
+                        <div class="image-overlay"></div>
                     </div>
-                </div>
-                <div class="code-badge">
-                    <i class="ph ph-code"></i>
-                    <span>&lt;FullStack /&gt;</span>
+                    <!-- 3D Floating Tech Badges -->
+                    <div class="floating-badge badge-1">
+                        <i class="ph ph-coffee"></i>
+                        <span>Java Developer</span>
+                    </div>
+                    <div class="floating-badge badge-2">
+                        <i class="ph ph-code"></i>
+                        <span>Full Stack</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -115,29 +132,29 @@
             <div class="about-grid">
                 <div class="about-image-side">
                     <div class="experience-card">
-                        <span class="number">B.Tech</span>
-                        <span class="label">CSE Student</span>
+                        <span class="number">3rd Year</span>
+                        <span class="label">B.Tech Student</span>
                     </div>
                     <div class="stats-card">
                         <div class="stat-item">
                             <i class="ph ph-check-circle"></i>
-                            <span>200+ Problems Solved</span>
+                            <span>100+ Problems Solved</span>
                         </div>
                         <div class="stat-item">
                             <i class="ph ph-rocket-launch"></i>
-                            <span>5+ Projects Done</span>
+                            <span>3+ Projects Done</span>
                         </div>
                     </div>
                 </div>
                 <div class="about-content">
-                    <p class="highlight">I am a Computer Science Engineering student with a strong passion for web development and software engineering.</p>
-                    <p>I started my journey with curiosity about how websites work, and now I build full-stack applications using technologies like React, Node.js, and MongoDB.</p>
+                    <p class="highlight">I am a 3rd-year Computer Science Engineering student with a strong passion for web development, Java development, and software engineering.</p>
+                    <p>I started my journey with curiosity about how websites work, and now I build full-stack applications using technologies like React, Node.js, MongoDB, and Java.</p>
                     <p>I enjoy solving real-world problems, learning new technologies, and improving my coding skills every day.</p>
                     <p>Currently, I am preparing for software development roles and enhancing my knowledge in Data Structures, Algorithms, and System Design.</p>
                     <div class="info-badges">
                         <div class="info-badge"><i class="ph ph-graduation-cap"></i> CSE Student</div>
                         <div class="info-badge"><i class="ph ph-map-pin"></i> India</div>
-                        <div class="info-badge"><i class="ph ph-calendar"></i> Final Year</div>
+                        <div class="info-badge"><i class="ph ph-calendar"></i> 3rd Year</div>
                     </div>
                 </div>
             </div>
@@ -174,6 +191,15 @@
                     </div>
                     <div class="skill-item reveal">
                         <div class="skill-info">
+                            <span>Java Development</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" data-width="85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item reveal">
+                        <div class="skill-info">
                             <span>Data Structures & Algo</span>
                             <span>80%</span>
                         </div>
@@ -185,11 +211,11 @@
                 <div class="skills-column">
                     <h3>Tools & Technologies</h3>
                     <div class="tool-tags reveal">
+                        <div class="tool-tag"><i class="ph ph-coffee"></i> Java</div>
                         <div class="tool-tag"><i class="ph ph-git-branch"></i> Git & GitHub</div>
                         <div class="tool-tag"><i class="ph ph-terminal"></i> VS Code</div>
                         <div class="tool-tag"><i class="ph ph-file-code"></i> Postman</div>
                         <div class="tool-tag"><i class="ph ph-cube"></i> Docker</div>
-                        <div class="tool-tag"><i class="ph ph-cloud"></i> AWS</div>
                         <div class="tool-tag"><i class="ph ph-database"></i> MySQL</div>
                         <div class="tool-tag"><i class="ph ph-leaf"></i> MongoDB</div>
                     </div>
@@ -209,7 +235,6 @@
             <div class="filter-btns">
                 <button class="filter-btn active" data-filter="all">All</button>
                 <button class="filter-btn" data-filter="React">React</button>
-                <button class="filter-btn" data-filter="Python">Python</button>
                 <button class="filter-btn" data-filter="JS">JS / Next.js</button>
             </div>
 
@@ -219,23 +244,75 @@
         </div>
     </section>
 
-    <!-- Stats Section -->
+    <!-- GitHub Integration Section -->
+    <section class="section" id="github">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge">Open Source</span>
+                <h2 class="section-title">GitHub <span>Repos</span></h2>
+                <div class="title-underline"></div>
+                <p>Live repositories automatically synced from my GitHub profile.</p>
+            </div>
+            <div class="github-grid" id="github-repos">
+                <!-- Repos injected via main.js -->
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="https://github.com/KhushiKumari6201" target="_blank" class="btn btn-outline">View GitHub Profile <i class="ph ph-github-logo"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="section bg-alt" id="blog">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge">Insights</span>
+                <h2 class="section-title">Latest <span>Blogs</span></h2>
+                <div class="title-underline"></div>
+                <p>Sharing my technical journey and learning experiences.</p>
+            </div>
+            <div class="blog-grid">
+                <div class="blog-card reveal">
+                    <div class="blog-img">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80" alt="Learn Java">
+                    </div>
+                    <div class="blog-info">
+                        <span class="blog-date">April 12, 2026</span>
+                        <h4>How I learned Java</h4>
+                        <p>A journey from "Hello World" to building complex backend systems.</p>
+                        <a href="#" class="blog-link">Read More <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="blog-card reveal">
+                    <div class="blog-img">
+                        <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80" alt="Mistakes">
+                    </div>
+                    <div class="blog-info">
+                        <span class="blog-date">March 28, 2026</span>
+                        <h4>My first project mistakes</h4>
+                        <p>Lessons learned from unoptimized code and system architecture.</p>
+                        <a href="#" class="blog-link">Read More <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <section id="stats" class="stats-section section">
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card reveal">
                     <i class="ph ph-code-block"></i>
-                    <h3 class="counter" data-target="200">0</h3>
+                    <h3 class="counter" data-target="100">0</h3>
                     <p>DSA Problems Solved</p>
                 </div>
                 <div class="stat-card reveal">
                     <i class="ph ph-layout"></i>
-                    <h3 class="counter" data-target="5">0</h3>
+                    <h3 class="counter" data-target="3">0</h3>
                     <p>Projects Completed</p>
                 </div>
                 <div class="stat-card reveal">
                     <i class="ph ph-git-merge"></i>
-                    <h3 class="counter" data-target="150">0</h3>
+                    <h3 class="counter" data-target="50">0</h3>
                     <p>GitHub Contributions</p>
                 </div>
                 <div class="stat-card reveal">
@@ -263,7 +340,7 @@
                     <div class="contact-methods">
                         <div class="contact-item">
                             <i class="ph ph-envelope"></i>
-                            <span>your-email@gmail.com</span>
+                            <span>khushikri.92637@gmail.com</span>
                         </div>
                         <div class="contact-item">
                             <i class="ph ph-map-pin"></i>
@@ -296,9 +373,9 @@
                 <div class="footer-logo">KHUSHI<span>.</span></div>
                 <p>&copy; 2024 Khushi Kumari. Learning System Design & Cloud.</p>
                 <div class="footer-socials">
-                    <a href="#"><i class="ph ph-github-logo"></i></a>
-                    <a href="#"><i class="ph ph-linkedin-logo"></i></a>
-                    <a href="#"><i class="ph ph-envelope"></i></a>
+                    <a href="https://github.com/KhushiKumari6201" target="_blank"><i class="ph ph-github-logo"></i></a>
+                    <a href="https://linkedin.com/in/khushi-k-642b57323" target="_blank"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="mailto:khushikri.92637@gmail.com"><i class="ph ph-envelope"></i></a>
                 </div>
             </div>
         </div>

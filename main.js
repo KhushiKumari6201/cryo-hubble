@@ -1,6 +1,6 @@
 // Typing Animation Logic
 const typingText = document.querySelector("#typing-text");
-const phrases = ["a Full Stack Developer", "a Problem Solver", "a System Designer", "a Creative Thinker"];
+const phrases = ["a Web Developer", "a Java Programmer", "a Problem Solver"];
 let phraseIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
@@ -30,28 +30,25 @@ function type() {
     setTimeout(type, typeSpeed);
 }
 
-// Dark Mode Toggle
+// Theme Toggle Logic
 const themeToggle = document.querySelector("#themeToggle");
+const themeIconWrapper = themeToggle.querySelector(".mode-icon-wrapper");
 const body = document.body;
-const icon = themeToggle.querySelector("i");
+
+function updateThemeUI(isDark) {
+    themeIconWrapper.innerHTML = isDark ? "🌞" : "🌙";
+    body.classList.toggle("dark-theme", isDark);
+}
 
 themeToggle.addEventListener("click", () => {
-    body.classList.toggle("dark-theme");
-    if (body.classList.contains("dark-theme")) {
-        icon.classList.replace("ph-sun", "ph-moon");
-        localStorage.setItem("theme", "dark");
-    } else {
-        icon.classList.replace("ph-moon", "ph-sun");
-        localStorage.setItem("theme", "light");
-    }
+    const isNowDark = !body.classList.contains("dark-theme");
+    updateThemeUI(isNowDark);
+    localStorage.setItem("portfolio-theme", isNowDark ? "dark" : "light");
 });
 
 // Load saved theme
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme === "light") {
-    body.classList.remove("dark-theme");
-    icon.classList.replace("ph-moon", "ph-sun");
-}
+const savedTheme = localStorage.getItem("portfolio-theme");
+updateThemeUI(savedTheme === "dark");
 
 // Mobile Menu Toggle
 const navToggle = document.querySelector("#navToggle");
@@ -86,8 +83,48 @@ window.addEventListener("scroll", () => {
 });
 
 // Dynamic Projects
-const projectsGrid = document.querySelector("#projectsGrid");
 const filterBtns = document.querySelectorAll(".filter-btn");
+
+// Extreme 3D Card Effect
+function init3DEffect() {
+    document.addEventListener("mousemove", (e) => {
+        const cards = document.querySelectorAll(".project-card, .stat-card, .profile-container");
+        const x = e.clientX;
+        const y = e.clientY;
+
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cardX = rect.left + rect.width / 2;
+            const cardY = rect.top + rect.height / 2;
+
+            const angleX = (cardY - y) / 15; // Increased sensitivity
+            const angleY = (x - cardX) / 15;
+
+            if (Math.abs(angleX) < 20 && Math.abs(angleY) < 20) {
+                card.style.transform = `perspective(1200px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(10px)`;
+                card.style.borderColor = "var(--primary)";
+            } else {
+                card.style.transform = "";
+                card.style.borderColor = "";
+            }
+        });
+
+        // 3D Cube Follow-Mouse nudge
+        const cube = document.querySelector(".cube");
+        if(cube) {
+            const cubeX = (window.innerWidth / 2 - x) / 50;
+            const cubeY = (window.innerHeight / 2 - y) / 50;
+            cube.style.transform = `rotateX(${cubeY}deg) rotateY(${cubeX}deg)`;
+        }
+        
+        // Mouse Glow Global
+        const mouseGlow = document.querySelector(".mouse-glow");
+        if(mouseGlow) {
+            mouseGlow.style.left = x + "px";
+            mouseGlow.style.top = y + "px";
+        }
+    });
+}
 
 async function fetchProjects() {
     try {
@@ -195,6 +232,7 @@ window.addEventListener("load", () => {
         loader.style.display = "none";
         type();
         fetchProjects();
+        init3DEffect();
     }, 500);
 });
 
@@ -211,3 +249,79 @@ document.querySelector("#contactForm").addEventListener("submit", (e) => {
         btn.innerHTML = originalText;
     }, 1500);
 });
+
+// Shard Generator
+function createShards() {
+    const container = document.querySelector(".bg-shards");
+    if(!container) return;
+    
+    for(let i = 0; i < 20; i++) {
+        const shard = document.createElement("div");
+        shard.className = "shard";
+        shard.style.left = Math.random() * 100 + "vw";
+        shard.style.animationDelay = Math.random() * 5 + "s";
+        shard.style.opacity = Math.random() * 0.3;
+        container.appendChild(shard);
+    }
+}
+createShards();
+
+
+// Live GitHub Data Fetching
+async function fetchGitHubData() {
+    try {
+        const username = "KhushiKumari6201";
+        const reposRes = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`);
+        const repos = await reposRes.json();
+        const container = document.querySelector("#github-repos");
+        
+        if (container && Array.isArray(repos)) {
+            container.innerHTML = repos.map(repo => `
+                <div class="github-card reveal">
+                    <div class="repo-header">
+                        <i class="ph ph-git-repository"></i>
+                        <h5>${repo.name}</h5>
+                    </div>
+                    <p>${repo.description || "Live repository on GitHub."}</p>
+                    <div class="repo-meta">
+                        <span><i class="ph ph-star"></i> ${repo.stargazers_count}</span>
+                        <span><i class="ph ph-git-fork"></i> ${repo.forks_count}</span>
+                        <span><i class="ph ph-code"></i> ${repo.language || "Mixed"}</span>
+                    </div>
+                    <a href="${repo.html_url}" target="_blank" class="repo-link">View Repo <i class="ph ph-arrow-right"></i></a>
+                </div>
+            `).join("");
+        }
+    } catch (e) { console.error("GitHub Fetch Error:", e); }
+}
+fetchGitHubData();
+
+
+// Global Pop Click Animation
+document.addEventListener("click", (e) => {
+    // Add pop-click class to target element or its closest interactive parent
+    const target = e.target.closest("button, a, .stat-card, .project-card, .tool-tag");
+    if(target) {
+        target.classList.add("pop-click");
+        setTimeout(() => target.classList.remove("pop-click"), 200);
+    }
+    
+    // Sparkle effect at mouse position
+    const sparkle = document.createElement("div");
+    sparkle.className = "click-sparkle";
+    sparkle.style.left = e.clientX + "px";
+    sparkle.style.top = e.clientY + "px";
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 500);
+});
+
+
+// Text-specific Pop Click
+document.addEventListener("click", (e) => {
+    const textTarget = e.target.closest("h1, h2, h3, h4, p, span, li");
+    if(textTarget && !textTarget.classList.contains("pop-click")) {
+        textTarget.classList.add("pop-click");
+        setTimeout(() => textTarget.classList.remove("pop-click"), 200);
+    }
+});
+
