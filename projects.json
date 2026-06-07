@@ -7,7 +7,7 @@
         "tech": ["React", "Node.js", "MongoDB", "Tailwind CSS"],
         "features": ["Provider Search", "Slot Booking", "Appointment History"],
         "image": "assets/doctor_booking.png",
-        "github": "https://github.com/KhushiKumari6201/doctor-appointment",
+        "github": "https://github.com/KhushiKumari6201/prescripto-full-stack",
         "live": "#"
     },
     {
@@ -18,7 +18,7 @@
         "tech": ["Next.js", "Tailwind CSS", "Redux", "Stripe"],
         "features": ["Product Dashboard", "Cart System", "User Auth"],
         "image": "https://images.unsplash.com/photo-1472851294608-062f824d29cc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "github": "https://github.com/KhushiKumari6201/ecommerce-pro",
+        "github": "https://github.com/KhushiKumari6201/E-Commerce-Elevate-",
         "live": "#"
     },
     {
@@ -29,7 +29,7 @@
         "tech": ["React", "Firebase", "Context API", "CSS Modules"],
         "features": ["Inventory Sync", "Dynamic Search", "Rating System"],
         "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-        "github": "https://github.com/KhushiKumari6201/fresh-mart",
+        "github": "https://github.com/KhushiKumari6201/FreshMart",
         "live": "#"
     }
 ]
