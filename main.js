@@ -233,6 +233,7 @@ window.addEventListener("load", () => {
         type();
         fetchProjects();
         init3DEffect();
+        initAIChatbot();
     }, 500);
 });
 
@@ -324,4 +325,130 @@ document.addEventListener("click", (e) => {
         setTimeout(() => textTarget.classList.remove("pop-click"), 200);
     }
 });
+
+
+// AI Chatbot Client Side Logic
+function initAIChatbot() {
+    const chatbot = document.querySelector("#ai-chatbot");
+    const toggleBtn = document.querySelector("#chat-toggle-btn");
+    const closeBtn = document.querySelector("#chat-close-btn");
+    const chatWindow = document.querySelector("#chat-window");
+    const chatForm = document.querySelector("#chat-form");
+    const chatInput = document.querySelector("#chat-input");
+    const chatMessages = document.querySelector("#chat-messages");
+    const suggestBtns = document.querySelectorAll(".suggest-btn");
+
+    if (!chatbot || !toggleBtn || !chatWindow) return;
+
+    // Toggle Chat Window
+    toggleBtn.addEventListener("click", () => {
+        chatWindow.classList.toggle("active");
+        
+        // Hide badge on click
+        const badge = toggleBtn.querySelector(".chat-badge");
+        if (badge) badge.style.display = "none";
+        
+        // Auto scroll to bottom when opened
+        if (chatWindow.classList.contains("active")) {
+            setTimeout(scrollToBottom, 300);
+            chatInput.focus();
+        }
+    });
+
+    closeBtn.addEventListener("click", () => {
+        chatWindow.classList.remove("active");
+    });
+
+    // Auto-scroll helper
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Append Message Helper
+    function appendMessage(sender, text) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `message ${sender === "user" ? "user-msg" : "bot-msg"}`;
+        
+        // Simple markdown links support (replaces [text](url) with HTML link)
+        const formattedText = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 700;">$1</a>');
+        msgDiv.innerHTML = formattedText;
+        
+        chatMessages.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    // Show/Hide Typing Indicator
+    function setTypingIndicator(show) {
+        const existing = chatMessages.querySelector(".typing-indicator");
+        if (show) {
+            if (!existing) {
+                const indicator = document.createElement("div");
+                indicator.className = "typing-indicator";
+                indicator.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                chatMessages.appendChild(indicator);
+                scrollToBottom();
+            }
+        } else {
+            if (existing) {
+                existing.remove();
+            }
+        }
+    }
+
+    // Handle sending a message
+    async function sendMessage(text) {
+        const userMsg = text.trim();
+        if (!userMsg) return;
+
+        // Add user message
+        appendMessage("user", userMsg);
+        chatInput.value = "";
+        
+        // Show typing indicator
+        setTypingIndicator(true);
+
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: userMsg })
+            });
+
+            if (!response.ok) {
+                throw new Error("Chat request failed");
+            }
+
+            const data = await response.json();
+            setTypingIndicator(false);
+            appendMessage("bot", data.reply);
+
+        } catch (error) {
+            console.error("Chat Error:", error);
+            setTypingIndicator(false);
+            appendMessage("bot", "Oops! I ran into an error connecting to the server. Please try again in a moment.");
+        }
+    }
+
+    // Handle Form Submit
+    chatForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        sendMessage(chatInput.value);
+    });
+
+    // Handle Quick Suggestions
+    suggestBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const query = btn.getAttribute("data-query");
+            if (query) {
+                sendMessage(query);
+            }
+        });
+    });
+}
 

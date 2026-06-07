@@ -382,6 +382,56 @@
         </div>
     </footer>
 
+    <!-- AI Chatbot Widget -->
+    <div id="ai-chatbot" class="chat-widget">
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle-btn" class="chat-toggle" aria-label="Open AI Assistant">
+            <div class="chat-toggle-pulse"></div>
+            <i class="ph ph-chat-circle-dots"></i>
+            <span class="chat-badge">AI</span>
+        </button>
+
+        <!-- Chat Window Container -->
+        <div id="chat-window" class="chat-window">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-status">
+                    <span class="status-dot"></span>
+                    <div class="chat-header-text">
+                        <h5>Khushi's AI</h5>
+                        <p class="status-label">Online</p>
+                    </div>
+                </div>
+                <button id="chat-close-btn" class="chat-close-btn" aria-label="Close chat">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+
+            <!-- Messages Container -->
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot-msg">
+                    Hi! I'm Khushi's AI assistant. Ask me anything about her projects, skills, or availability!
+                </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="chat-suggestions">
+                <button class="suggest-btn" data-query="What projects have you built?">Projects</button>
+                <button class="suggest-btn" data-query="What are your core skills?">Skills</button>
+                <button class="suggest-btn" data-query="Are you available for internships?">Availability</button>
+                <button class="suggest-btn" data-query="How can I contact you?">Contact</button>
+            </div>
+
+            <!-- Input Form -->
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask about Khushi..." required autocomplete="off">
+                <button type="submit" class="chat-send-btn" aria-label="Send message">
+                    <i class="ph ph-paper-plane-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="main.js"></script>
 </body>
