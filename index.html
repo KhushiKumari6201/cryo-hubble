@@ -384,19 +384,64 @@
 
     <!-- AI Chatbot Widget -->
     <div id="ai-chatbot" class="chat-widget">
-        <!-- Chat Toggle Button -->
-        <button id="chat-toggle-btn" class="chat-toggle" aria-label="Open AI Assistant">
-            <div class="chat-toggle-pulse"></div>
-            <i class="ph ph-chat-circle-dots"></i>
+        <!-- Teaser Popup Bubble -->
+        <div id="chat-teaser" class="chat-teaser">
+            <button id="teaser-close-btn" class="teaser-close" aria-label="Dismiss teaser">
+                <i class="ph ph-x"></i>
+            </button>
+            <div class="teaser-content">
+                <div class="teaser-avatar">
+                    <img src="assets/profile.png" alt="Khushi's AI">
+                </div>
+                <div class="teaser-text">
+                    <p class="teaser-title">Khushi's AI</p>
+                    <p class="teaser-msg">Hi there! Ask me anything about Khushi. 👋</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D Bot Toggle Container -->
+        <div id="chat-toggle-btn" class="chat-3d-bot-toggle" aria-label="Open AI Assistant">
+            <div class="bot-3d-container">
+                <div class="bot-3d-shadow"></div>
+                <div class="bot-3d-body-wrapper">
+                    <!-- Head -->
+                    <div class="bot-3d-head">
+                        <div class="bot-3d-ears">
+                            <div class="bot-3d-ear ear-left"></div>
+                            <div class="bot-3d-ear ear-right"></div>
+                        </div>
+                        <div class="bot-3d-screen">
+                            <div class="bot-3d-eyes">
+                                <div class="bot-3d-eye eye-left"></div>
+                                <div class="bot-3d-eye eye-right"></div>
+                            </div>
+                            <div class="bot-3d-mouth"></div>
+                        </div>
+                    </div>
+                    <!-- Body Torso -->
+                    <div class="bot-3d-torso">
+                        <div class="bot-3d-chest-plate"></div>
+                        <div class="bot-3d-arms">
+                            <div class="bot-3d-arm arm-left"></div>
+                            <div class="bot-3d-arm arm-right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- AI Notification Badge -->
             <span class="chat-badge">AI</span>
-        </button>
+        </div>
 
         <!-- Chat Window Container -->
         <div id="chat-window" class="chat-window">
             <!-- Header -->
             <div class="chat-header">
                 <div class="chat-status">
-                    <span class="status-dot"></span>
+                    <div class="chat-avatar-wrapper">
+                        <img src="assets/profile.png" alt="Khushi's AI" class="chat-header-avatar">
+                        <span class="status-dot"></span>
+                    </div>
                     <div class="chat-header-text">
                         <h5>Khushi's AI</h5>
                         <p class="status-label">Online</p>
@@ -409,8 +454,16 @@
 
             <!-- Messages Container -->
             <div id="chat-messages" class="chat-messages">
-                <div class="message bot-msg">
-                    Hi! I'm Khushi's AI assistant. Ask me anything about her projects, skills, or availability!
+                <div class="message-wrapper bot-wrapper">
+                    <div class="chat-bot-avatar">
+                        <img src="assets/profile.png" alt="AI Avatar">
+                    </div>
+                    <div class="message-content">
+                        <div class="message bot-msg">
+                            Hi! I'm Khushi's AI assistant. Ask me anything about her projects, skills, or availability!
+                        </div>
+                        <span class="message-time">Just Now</span>
+                    </div>
                 </div>
             </div>
 

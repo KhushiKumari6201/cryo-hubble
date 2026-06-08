@@ -109,6 +109,23 @@ function init3DEffect() {
             }
         });
 
+        // 3D Robot Head Follow-Mouse rotation
+        const botHead = document.querySelector(".bot-3d-head");
+        if (botHead) {
+            const rect = botHead.getBoundingClientRect();
+            const headX = rect.left + rect.width / 2;
+            const headY = rect.top + rect.height / 2;
+            
+            const diffX = x - headX;
+            const diffY = y - headY;
+            
+            const maxRotation = 22;
+            const rotationX = Math.min(Math.max(-diffY / 12, -maxRotation), maxRotation);
+            const rotationY = Math.min(Math.max(diffX / 12, -maxRotation), maxRotation);
+            
+            botHead.style.transform = `translateZ(15px) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+        }
+
         // 3D Cube Follow-Mouse nudge
         const cube = document.querySelector(".cube");
         if(cube) {
@@ -337,12 +354,46 @@ function initAIChatbot() {
     const chatInput = document.querySelector("#chat-input");
     const chatMessages = document.querySelector("#chat-messages");
     const suggestBtns = document.querySelectorAll(".suggest-btn");
+    const teaser = document.querySelector("#chat-teaser");
+    const teaserClose = document.querySelector("#teaser-close-btn");
 
     if (!chatbot || !toggleBtn || !chatWindow) return;
+
+    // Teaser Bubble Logic
+    let teaserClosed = localStorage.getItem("chat-teaser-closed") === "true";
+    
+    if (teaser && !teaserClosed && !chatWindow.classList.contains("active")) {
+        setTimeout(() => {
+            if (!chatWindow.classList.contains("active") && !teaserClosed) {
+                teaser.classList.add("active");
+            }
+        }, 2500);
+    }
+
+    if (teaserClose) {
+        teaserClose.addEventListener("click", (e) => {
+            e.stopPropagation();
+            teaser.classList.remove("active");
+            teaserClosed = true;
+            localStorage.setItem("chat-teaser-closed", "true");
+        });
+    }
+
+    if (teaser) {
+        teaser.addEventListener("click", () => {
+            teaser.classList.remove("active");
+            chatWindow.classList.add("active");
+            setTimeout(scrollToBottom, 300);
+            chatInput.focus();
+            const badge = toggleBtn.querySelector(".chat-badge");
+            if (badge) badge.style.display = "none";
+        });
+    }
 
     // Toggle Chat Window
     toggleBtn.addEventListener("click", () => {
         chatWindow.classList.toggle("active");
+        if (teaser) teaser.classList.remove("active");
         
         // Hide badge on click
         const badge = toggleBtn.querySelector(".chat-badge");
@@ -366,28 +417,53 @@ function initAIChatbot() {
 
     // Append Message Helper
     function appendMessage(sender, text) {
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `message ${sender === "user" ? "user-msg" : "bot-msg"}`;
+        const msgWrapper = document.createElement("div");
+        msgWrapper.className = `message-wrapper ${sender}-wrapper`;
         
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
         // Simple markdown links support (replaces [text](url) with HTML link)
         const formattedText = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="text-decoration: underline; color: inherit; font-weight: 700;">$1</a>');
-        msgDiv.innerHTML = formattedText;
         
-        chatMessages.appendChild(msgDiv);
+        if (sender === "bot") {
+            msgWrapper.innerHTML = `
+                <div class="chat-bot-avatar">
+                    <img src="assets/profile.png" alt="AI Avatar">
+                </div>
+                <div class="message-content">
+                    <div class="message bot-msg">${formattedText}</div>
+                    <span class="message-time">${time}</span>
+                </div>
+            `;
+        } else {
+            msgWrapper.innerHTML = `
+                <div class="message-content">
+                    <div class="message user-msg">${formattedText}</div>
+                    <span class="message-time">${time}</span>
+                </div>
+            `;
+        }
+        
+        chatMessages.appendChild(msgWrapper);
         scrollToBottom();
     }
 
     // Show/Hide Typing Indicator
     function setTypingIndicator(show) {
-        const existing = chatMessages.querySelector(".typing-indicator");
+        const existing = chatMessages.querySelector(".typing-indicator-wrapper");
         if (show) {
             if (!existing) {
                 const indicator = document.createElement("div");
-                indicator.className = "typing-indicator";
+                indicator.className = "typing-indicator-wrapper";
                 indicator.innerHTML = `
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
+                    <div class="chat-bot-avatar">
+                        <img src="assets/profile.png" alt="AI Avatar">
+                    </div>
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
                 `;
                 chatMessages.appendChild(indicator);
                 scrollToBottom();

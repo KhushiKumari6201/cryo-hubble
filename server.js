@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -44,6 +45,32 @@ function matchFallbackResponse(msg) {
     return "That's a great question! I'm currently running in Demo Mode (without an API key). I can answer questions about Khushi's skills, projects, availability, resume, or contact info. What would you like to ask?";
 }
 
+const SYSTEM_PROMPT = `You are a professional, friendly AI representative for Khushi Kumari on her personal portfolio.
+Your sole purpose is to answer questions about Khushi's profile, skills, projects, education, and availability using only the information provided below.
+
+STRICT RULES:
+1. ONLY answer questions related to Khushi Kumari, her skills, projects, contact info, education, and professional availability.
+2. If the user asks about general knowledge, programming/coding problems, writing scripts, math, history, or any topic unrelated to Khushi Kumari, you MUST politely decline. For example: "I am only authorized to answer questions about Khushi's professional portfolio and background. Please feel free to ask about her projects, skills, or availability!"
+3. If the user asks to get in touch, hire Khushi, collaborate, or needs her help with a project, welcome them and direct them to use the contact form at the bottom of the page or email her directly at khushikri.92637@gmail.com.
+4. Do not make up facts or assumptions. If a question about Khushi cannot be answered using the details below, say "I don't have that information, but you can reach out to Khushi directly via the contact form or email."
+5. Be extremely concise (maximum 3 sentences per reply).
+6. Always speak in third-person relative to Khushi (e.g., 'Khushi is currently...', 'She has built...'). Maintain a helpful and professional tone.
+
+PORTFOLIO DETAILS:
+- Name: Khushi Kumari
+- Role: Web Developer, Java Programmer, Full Stack Developer, Problem Solver
+- Status: 3rd year Computer Science Engineering student (B.Tech). Open for internships and remote software development roles.
+- Skills: React & JavaScript, Backend (Node.js/Express), Java Development, Data Structures & Algorithms, Git & GitHub, VS Code, Postman, Docker, MySQL, MongoDB.
+- Projects:
+  1. Doctor Appointment Booking System (Prescripto): React, Node.js, MongoDB, Tailwind CSS. (Features: Provider Search, Slot Booking, Appointment History). GitHub: https://github.com/KhushiKumari6201/prescripto-full-stack
+  2. E-commerce Website: Next.js, Tailwind CSS, Redux, Stripe. (Features: Product Dashboard, Cart System, User Auth). GitHub: https://github.com/KhushiKumari6201/E-Commerce-Elevate-
+  3. Fresh Mart: Organic grocery delivery tracking. React, Firebase, Context API, CSS Modules. (Features: Inventory Sync, Dynamic Search, Rating System). GitHub: https://github.com/KhushiKumari6201/FreshMart
+- DSA Stats: Solved over 100+ problems on LeetCode (Profile: https://leetcode.com/u/brs9Vhbczx/).
+- GitHub Profile: https://github.com/KhushiKumari6201 (50+ contributions)
+- Blogs: "How I learned Java" and "My first project mistakes".
+- Contact: Email (khushikri.92637@gmail.com), LinkedIn (linkedin.com/in/khushi-k-642b57323), or the portfolio's contact form.
+- Resume: Downloadable at assets/resume.pdf.`;
+
 // POST endpoint for AI Chatbot
 app.post('/api/chat', async (req, res) => {
     const { message } = req.body;
@@ -52,11 +79,14 @@ app.post('/api/chat', async (req, res) => {
         return res.status(400).json({ error: "Message is required." });
     }
     
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const openrouterKey = process.env.OPENROUTER_API_KEY;
+    const openrouterModel = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+    const geminiKey = process.env.GEMINI_API_KEY;
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
     
-    if (!apiKey) {
+    if (!openrouterKey && !geminiKey && !anthropicKey) {
         // Run in Demo Mode using the smart fallback responder
-        console.log("ANTHROPIC_API_KEY is not set. Running in Demo Mode.");
+        console.log("No API key (OpenRouter, Gemini or Anthropic) is set. Running in Demo Mode.");
         const reply = matchFallbackResponse(message);
         // Simulate a tiny delay for a natural chat experience
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -64,32 +94,102 @@ app.post('/api/chat', async (req, res) => {
     }
     
     try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: {
-                "x-api-key": apiKey,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "claude-3-5-sonnet-20241022",
-                max_tokens: 300,
-                system: "You are a professional, friendly AI assistant representing Khushi Kumari on her personal portfolio. Answer questions about her profile, skills, projects, education, and availability. Be extremely concise (maximum 3 sentences per reply). Do not make up facts. Details about Khushi: 3rd year Computer Science Engineering student. Skills: React, Node.js, Java, MySQL, MongoDB, Git. Projects: Doctor Booking (Prescripto), E-commerce Website, Fresh Mart. Contact: khushikri.92637@gmail.com, GitHub: KhushiKumari6201, LinkedIn: khushi-k-642b57323, LeetCode: brs9Vhbczx. Availability: Open for internships and remote dev roles. Always speak in first-person as her AI representative (e.g., 'Khushi is currently...'). Maintain a helpful and professional tone.",
-                messages: [
-                    { role: "user", content: message }
-                ]
-            })
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Claude API Error Status:", response.status, errorText);
-            throw new Error(`Anthropic API returned status ${response.status}`);
+        if (openrouterKey) {
+            // Call OpenRouter API
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${openrouterKey}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "http://localhost:3000",
+                    "X-Title": "Khushi Kumari Portfolio"
+                },
+                body: JSON.stringify({
+                    model: openrouterModel,
+                    messages: [
+                        { role: "system", content: SYSTEM_PROMPT },
+                        { role: "user", content: message }
+                    ],
+                    max_tokens: 300,
+                    temperature: 0.5
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("OpenRouter API Error Status:", response.status, errorText);
+                throw new Error(`OpenRouter API returned status ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const reply = data.choices && data.choices[0] && data.choices[0].message
+                ? data.choices[0].message.content
+                : "I'm sorry, I couldn't generate a response.";
+            return res.json({ reply, isDemo: false });
+        } else if (geminiKey) {
+            // Call Gemini API
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [{ text: message }]
+                        }
+                    ],
+                    systemInstruction: {
+                        parts: [{ text: SYSTEM_PROMPT }]
+                    },
+                    generationConfig: {
+                        maxOutputTokens: 300,
+                        temperature: 0.5
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Gemini API Error Status:", response.status, errorText);
+                throw new Error(`Gemini API returned status ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const reply = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]
+                ? data.candidates[0].content.parts[0].text
+                : "I'm sorry, I couldn't generate a response.";
+            return res.json({ reply, isDemo: false });
+        } else {
+            // Call Anthropic Claude API
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: {
+                    "x-api-key": anthropicKey,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "claude-3-5-sonnet-20241022",
+                    max_tokens: 300,
+                    system: SYSTEM_PROMPT,
+                    messages: [
+                        { role: "user", content: message }
+                    ]
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Claude API Error Status:", response.status, errorText);
+                throw new Error(`Anthropic API returned status ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const reply = data.content && data.content[0] ? data.content[0].text : "I'm sorry, I couldn't generate a response.";
+            return res.json({ reply, isDemo: false });
         }
-        
-        const data = await response.json();
-        const reply = data.content && data.content[0] ? data.content[0].text : "I'm sorry, I couldn't generate a response.";
-        return res.json({ reply, isDemo: false });
         
     } catch (err) {
         console.error("AI Chat Endpoint Error:", err);
