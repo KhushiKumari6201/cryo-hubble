@@ -88,7 +88,7 @@ const filterBtns = document.querySelectorAll(".filter-btn");
 // Extreme 3D Card Effect
 function init3DEffect() {
     document.addEventListener("mousemove", (e) => {
-        const cards = document.querySelectorAll(".project-card, .stat-card, .profile-container");
+        const cards = document.querySelectorAll(".project-card, .stat-card, .profile-container, .certification-card, .achievement-card");
         const x = e.clientX;
         const y = e.clientY;
 
@@ -195,6 +195,185 @@ function displayProjects(projects) {
     `).join('');
 }
 
+// Fetch and Display Certifications
+const certificationsGrid = document.querySelector("#certificationsGrid");
+
+async function fetchCertifications() {
+    try {
+        const response = await fetch("certifications.json");
+        const certifications = await response.json();
+        displayCertifications(certifications);
+    } catch (err) {
+        console.error("Error fetching certifications:", err);
+    }
+}
+
+function displayCertifications(certifications) {
+    if (!certificationsGrid) return;
+    
+    certificationsGrid.innerHTML = certifications.map(cert => `
+        <div class="certification-card reveal" data-cert-id="${cert.id}" data-cert-name="${cert.name}" data-cert-issuer="${cert.issuer}" data-cert-date="${cert.date}" data-cert-image="${cert.image}">
+            <div class="cert-badge">${cert.icon}</div>
+            <h4>${cert.name}</h4>
+            <div class="certification-issuer">${cert.issuer}</div>
+            <div class="certification-date">${cert.date}</div>
+            <div class="certification-status">${cert.status}</div>
+            <a href="#" class="certification-view">
+                View Certificate <i class="ph ph-arrow-right"></i>
+            </a>
+        </div>
+    `).join('');
+    
+    // Add click event listeners to all "View Certificate" buttons
+    document.querySelectorAll('.certification-view').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            const card = link.closest('.certification-card');
+            const certName = card.getAttribute('data-cert-name');
+            const certIssuer = card.getAttribute('data-cert-issuer');
+            const certDate = card.getAttribute('data-cert-date');
+            const certImage = card.getAttribute('data-cert-image');
+            
+            openCertificateModal(certImage, certName, certIssuer, certDate);
+        });
+    });
+}
+
+// Fetch and Display Achievements
+const achievementsGrid = document.querySelector("#achievementsGrid");
+
+async function fetchAchievements() {
+    try {
+        const response = await fetch("achievements.json");
+        const achievements = await response.json();
+        displayAchievements(achievements);
+    } catch (err) {
+        console.error("Error fetching achievements:", err);
+    }
+}
+
+function displayAchievements(achievements) {
+    if (!achievementsGrid) return;
+    
+    achievementsGrid.innerHTML = achievements.map(achievement => `
+        <div class="achievement-card reveal">
+            <div class="achievement-icon">${achievement.icon}</div>
+            <h4>${achievement.name}</h4>
+            <div class="achievement-category">${achievement.category}</div>
+            <p class="achievement-description">${achievement.description}</p>
+            <div class="achievement-detail">${achievement.detail}</div>
+            <span class="achievement-badge">${achievement.badge}</span>
+        </div>
+    `).join('');
+}
+
+// Certificate Modal Functions
+function openCertificateModal(imageSrc, title, issuer, date) {
+    const modal = document.querySelector('#certificateModal');
+    const modalTitle = document.querySelector('#certificateTitle');
+    const modalIssuer = document.querySelector('#certificateIssuer');
+    const modalDate = document.querySelector('#certificateDate');
+    const downloadLink = document.querySelector('#certificateDownloadLink');
+    const imageWrapper = document.querySelector('.certificate-modal-image-wrapper');
+
+    modalTitle.textContent = title;
+    modalIssuer.textContent = `Issued by: ${issuer}`;
+    modalDate.textContent = `Date: ${date}`;
+
+    // Reset wrapper
+    imageWrapper.innerHTML = '';
+    const img = document.createElement('img');
+    img.alt = title;
+    img.className = 'certificate-modal-image';
+    img.style.display = 'none';
+    imageWrapper.appendChild(img);
+
+    // Hide download link initially
+    downloadLink.style.display = 'none';
+    // Remove any old click handlers
+    const freshDownloadLink = downloadLink.cloneNode(true);
+    downloadLink.parentNode.replaceChild(freshDownloadLink, downloadLink);
+    const dlBtn = document.querySelector('#certificateDownloadLink');
+
+    if (imageSrc && imageSrc.trim() !== '') {
+        img.onload = function () {
+            img.style.display = 'block';
+            dlBtn.style.display = 'inline-flex';
+
+            // Blob-based download — works reliably for same-origin files
+            dlBtn.onclick = async function (e) {
+                e.preventDefault();
+                try {
+                    dlBtn.innerHTML = 'Downloading... <i class="ph ph-spinner-gap ph-spin"></i>';
+                    const response = await fetch(imageSrc);
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = `${title}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                    dlBtn.innerHTML = 'Download Certificate <i class="ph ph-download-simple"></i>';
+                } catch (err) {
+                    console.error('Download failed:', err);
+                    dlBtn.innerHTML = 'Download Certificate <i class="ph ph-download-simple"></i>';
+                }
+            };
+        };
+        img.onerror = function () {
+            showUploadPrompt(imageWrapper);
+        };
+        img.src = imageSrc;
+    } else {
+        showUploadPrompt(imageWrapper);
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function showUploadPrompt(wrapper) {
+    wrapper.style.minHeight = '300px';
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.justifyContent = 'center';
+    wrapper.innerHTML = `<div style="text-align: center; color: var(--text-muted);">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">📤</p>
+        <p style="font-size: 1.1rem; font-weight: 700;">Certificate image coming soon!</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload your certificate using the upload area below.</p>
+    </div>`;
+}
+
+function closeCertificateModal() {
+    const modal = document.querySelector('#certificateModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Add event listeners for certificate modal
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.querySelector('#closeModal');
+    const modalOverlay = document.querySelector('.certificate-modal-overlay');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeCertificateModal);
+    }
+    
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeCertificateModal);
+    }
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeCertificateModal();
+        }
+    });
+});
+
 // Stats Counter Animation
 const counters = document.querySelectorAll('.counter');
 const speed = 200;
@@ -230,6 +409,7 @@ sr.reveal('.hero-text, .hero-image', { origin: 'bottom', interval: 200 });
 sr.reveal('.about-image-side, .about-content', { origin: 'left', interval: 200 });
 sr.reveal('.skills-column', { origin: 'bottom', interval: 200 });
 sr.reveal('.section-header', { interval: 100 });
+sr.reveal('.certification-card, .achievement-card', { interval: 100 });
 sr.reveal('.stat-card', { 
     interval: 100,
     afterReveal: (el) => {
@@ -249,6 +429,8 @@ window.addEventListener("load", () => {
         loader.style.display = "none";
         type();
         fetchProjects();
+        fetchCertifications();
+        fetchAchievements();
         init3DEffect();
         initAIChatbot();
     }, 500);

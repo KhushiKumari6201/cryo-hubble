@@ -1,0 +1,56 @@
+[
+    {
+        "id": 1,
+        "name": "100+ DSA Problems Solved",
+        "category": "Problem Solving",
+        "description": "Successfully solved over 100 Data Structures and Algorithms problems on LeetCode.",
+        "detail": "LeetCode - Medium & Hard",
+        "icon": "💯",
+        "badge": "Milestone"
+    },
+    {
+        "id": 2,
+        "name": "3+ Full Stack Projects",
+        "category": "Development",
+        "description": "Built and deployed multiple full-stack applications using React, Node.js, and MongoDB.",
+        "detail": "Production Ready Applications",
+        "icon": "🚀",
+        "badge": "Featured"
+    },
+    {
+        "id": 3,
+        "name": "GitHub Contributor",
+        "category": "Open Source",
+        "description": "Active contributor to open-source projects with multiple merged pull requests.",
+        "detail": "50+ Contributions",
+        "icon": "🐙",
+        "badge": "Active"
+    },
+    {
+        "id": 4,
+        "name": "Top Performer in Hackathon",
+        "category": "Competitions",
+        "description": "Recognized among top performers in university coding competitions and hackathons.",
+        "detail": "Team Lead & Developer",
+        "icon": "🏆",
+        "badge": "Winner"
+    },
+    {
+        "id": 5,
+        "name": "Technical Mentor",
+        "category": "Leadership",
+        "description": "Mentored junior developers and helped peers improve their coding skills.",
+        "detail": "10+ Mentees Guided",
+        "icon": "👨‍🏫",
+        "badge": "Mentor"
+    },
+    {
+        "id": 6,
+        "name": "Fast Learner Badge",
+        "category": "Skills",
+        "description": "Quickly mastered multiple programming languages and frameworks.",
+        "detail": "6+ Technologies",
+        "icon": "⚡",
+        "badge": "Expert"
+    }
+]

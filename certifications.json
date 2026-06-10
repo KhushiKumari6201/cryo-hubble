@@ -1,0 +1,132 @@
+[
+    {
+        "id": 1,
+        "name": "Claude with the Anthropic API",
+        "issuer": "Anthropic",
+        "date": "2026",
+        "icon": "🤖",
+        "status": "Completed",
+        "image": "assets/certificates/anthropic-claude-api.png",
+        "link": "#"
+    },
+    {
+        "id": 2,
+        "name": "AWS Solutions Architecture Job Simulation",
+        "issuer": "Amazon Web Services via Forage",
+        "date": "December 3rd, 2024",
+        "icon": "🏗️",
+        "status": "Completed",
+        "image": "assets/certificates/aws-solutions-architecture.png",
+        "link": "#"
+    },
+    {
+        "id": 3,
+        "name": "Deloitte Data Analytics Job Simulation",
+        "issuer": "Deloitte via Forage",
+        "date": "June 7th, 2026",
+        "icon": "📊",
+        "status": "Completed",
+        "image": "assets/certificates/deloitte-data-analytics.png",
+        "link": "#"
+    },
+    {
+        "id": 4,
+        "name": "Projectathon - Engineer's Day",
+        "issuer": "SARS Club, GIET Gunupur",
+        "date": "Engineer's Day",
+        "icon": "🤖",
+        "status": "Completed",
+        "image": "assets/certificates/projectathon-engineers-day.png",
+        "link": "#"
+    },
+    {
+        "id": 5,
+        "name": "AI for Students: Build Your Own Generative AI Model",
+        "issuer": "NxtWave",
+        "date": "July 12, 2025",
+        "icon": "🧠",
+        "status": "Completed",
+        "image": "assets/certificates/nxtwave-ai-workshop.png",
+        "link": "#"
+    },
+    {
+        "id": 6,
+        "name": "Data Science Fundamentals & Industrial Networking",
+        "issuer": "Data Science Club GIETU & 1stop.ai",
+        "date": "February 11, 2025",
+        "icon": "📈",
+        "status": "Completed",
+        "image": "assets/certificates/1stop-data-science.png",
+        "link": "#"
+    },
+    {
+        "id": 7,
+        "name": "Web Development Workshop",
+        "issuer": "WebEye Club, GIET University",
+        "date": "September 26-28, 2024",
+        "icon": "🌐",
+        "status": "Completed",
+        "image": "assets/certificates/webeye-webdev-workshop.png",
+        "link": "#"
+    },
+    {
+        "id": 8,
+        "name": "Embedded 101 - Arduino & ESP32 Workshop",
+        "issuer": "S.A.R.S, GIET Gunupur",
+        "date": "February 2-4, 2026",
+        "icon": "⚡",
+        "status": "Completed",
+        "image": "assets/certificates/sars-embedded101-appreciation.png",
+        "link": "#"
+    },
+    {
+        "id": 9,
+        "name": "InnoTech Webinar",
+        "issuer": "InnoTech Club, GIETU",
+        "date": "January 21-22, 2025",
+        "icon": "💡",
+        "status": "Completed",
+        "image": "assets/certificates/innotech-webinar.png",
+        "link": "#"
+    },
+    {
+        "id": 10,
+        "name": "Basics of Arduino & Arduino Programming",
+        "issuer": "S.A.R.S, GIET University",
+        "date": "2024",
+        "icon": "🔧",
+        "status": "Completed",
+        "image": "assets/certificates/sars-arduino-achievement.png",
+        "link": "#"
+    },
+    {
+        "id": 11,
+        "name": "Wireless-Bot: Design and Implementation",
+        "issuer": "SARS Club, GIET University",
+        "date": "September 30 - October 1",
+        "icon": "📡",
+        "status": "Completed",
+        "image": "assets/certificates/sars-wireless-bot.png",
+        "link": "#"
+    },
+    {
+        "id": 12,
+        "name": "Cybersecurity Workshop with Cyber3ra",
+        "issuer": "Cybersecurity Club, GIET University",
+        "date": "2024",
+        "icon": "🔒",
+        "status": "Completed",
+        "image": "assets/certificates/cybersecurity-cyber3ra.png",
+        "link": "#"
+    },
+    {
+        "id": 13,
+        "name": "Simulate and Innovate Workshop",
+        "issuer": "S.A.R.S, GIET University",
+        "date": "March 17-19, 2025",
+        "icon": "🚀",
+        "status": "Completed",
+        "image": "assets/certificates/sars-simulate-innovate.png",
+        "link": "#"
+    }
+]

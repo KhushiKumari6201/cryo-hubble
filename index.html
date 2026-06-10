@@ -45,7 +45,8 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#skills">Skills</a></li>
-                <li><a href="#certificates">Certificates</a></li>
+                <li><a href="#certifications">Certifications</a></li>
+                <li><a href="#achievements">Achievements</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#stats">Stats</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -69,7 +70,8 @@
             <a href="#home">Home</a>
             <a href="#about">About</a>
             <a href="#skills">Skills</a>
-            <a href="#certificates">Certificates</a>
+            <a href="#certifications">Certifications</a>
+            <a href="#achievements">Achievements</a>
             <a href="#projects">Projects</a>
             <a href="#stats">Stats</a>
             <a href="#contact">Contact</a>
@@ -226,16 +228,30 @@
         </div>
     </section>
 
-    <!-- Certificates & Achievements Section -->
-    <section id="certificates" class="certificates section bg-alt">
+    <!-- Certifications Section -->
+    <section id="certifications" class="certifications section bg-alt">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Certificates & <span>Achievements</span></h2>
+                <h2 class="section-title">Certifications</h2>
                 <div class="title-underline"></div>
             </div>
             
-            <div class="certificates-grid" id="certificatesGrid">
-                <!-- Add your certificates here -->
+            <div class="certifications-grid" id="certificationsGrid">
+                <!-- Certifications loaded from JSON -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements Section -->
+    <section id="achievements" class="achievements section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Achievements</h2>
+                <div class="title-underline"></div>
+            </div>
+            
+            <div class="achievements-grid" id="achievementsGrid">
+                <!-- Achievements loaded from JSON -->
             </div>
         </div>
     </section>
@@ -381,6 +397,27 @@
             </div>
         </div>
     </section>
+
+    <!-- Certificate Modal -->
+    <div id="certificateModal" class="certificate-modal">
+        <div class="certificate-modal-content">
+            <button id="closeModal" class="close-modal" aria-label="Close Certificate">
+                <i class="ph ph-x"></i>
+            </button>
+            <div class="certificate-modal-image-wrapper">
+                <img id="certificateImage" src="" alt="Certificate" class="certificate-modal-image">
+            </div>
+            <div class="certificate-modal-info">
+                <h3 id="certificateTitle"></h3>
+                <p id="certificateIssuer"></p>
+                <p id="certificateDate"></p>
+                <a id="certificateDownloadLink" href="#" download class="btn btn-primary">
+                    Download Certificate <i class="ph ph-download-simple"></i>
+                </a>
+            </div>
+        </div>
+        <div class="certificate-modal-overlay"></div>
+    </div>
 
     <!-- Footer -->
     <footer>
