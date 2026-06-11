@@ -710,3 +710,45 @@ function initAIChatbot() {
     });
 }
 
+// ============================================
+// Currently Learning — Scroll Animations
+// ============================================
+function initCurrentlyLearning() {
+    // Animate SVG ring
+    const ringFill = document.querySelector('.cl-ring-fill');
+    if (ringFill) {
+        const progress = parseFloat(ringFill.getAttribute('data-progress')) || 0;
+        const circumference = 264; // 2 * π * r(42)
+        const offset = circumference - (progress / 100) * circumference;
+
+        const ringObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    ringFill.style.strokeDashoffset = offset;
+                    ringObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.4 });
+
+        const spotlightEl = document.querySelector('.cl-spotlight');
+        if (spotlightEl) ringObserver.observe(spotlightEl);
+    }
+
+    // Animate topic fill bars on scroll into view
+    const badgeEls = document.querySelectorAll('.cl-topic-badge');
+    if (badgeEls.length) {
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fill = entry.target.querySelector('.cl-topic-fill');
+                    if (fill) fill.style.width = fill.getAttribute('data-width');
+                    barObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        badgeEls.forEach(badge => barObserver.observe(badge));
+    }
+}
+
+window.addEventListener('load', initCurrentlyLearning);
