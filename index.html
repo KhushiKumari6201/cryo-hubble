@@ -49,6 +49,7 @@
                 <li><a href="#achievements">Achievements</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#stats">Stats</a></li>
+                <li><a href="#leetcode">LeetCode</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="nav-extras">
@@ -74,6 +75,7 @@
             <a href="#achievements">Achievements</a>
             <a href="#projects">Projects</a>
             <a href="#stats">Stats</a>
+            <a href="#leetcode">LeetCode</a>
             <a href="#contact">Contact</a>
         </div>
     </div>
@@ -481,6 +483,201 @@
                     <p>Technologies Learned</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         LeetCode Analytics Section
+         ══════════════════════════════════════════════════════ -->
+    <section id="leetcode" class="section leetcode-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge">Live Data</span>
+                <h2 class="section-title lc-section-title">
+                    <svg class="lc-title-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-.003-.004l-2.395-2.392c-1.396-1.396-3.484-1.636-5.127-.723-1.643.913-2.618 2.668-2.427 4.456.19 1.787 1.634 3.195 3.425 3.356 1.79.161 3.51-.715 4.549-2.227l.038-.056 3.854-4.126a1.377 1.377 0 0 0 .385-1.077 1.374 1.374 0 0 0-.895-1.096l-7.794-2.738a1.374 1.374 0 0 0-.488-.088Z"/>
+                    </svg>
+                    LeetCode <span>Analytics</span>
+                </h2>
+                <div class="title-underline"></div>
+                <p>Real-time coding stats fetched live from LeetCode's API.</p>
+            </div>
+
+            <!-- Profile + Refresh Row -->
+            <div class="lc-top-row">
+                <!-- Profile Card -->
+                <div class="lc-profile-card" id="lcProfileCard">
+                    <div class="lc-avatar-wrap">
+                        <img id="lcAvatar" src="" alt="LeetCode Avatar" class="lc-avatar">
+                        <div class="lc-avatar-fallback" id="lcAvatarFallback">K</div>
+                    </div>
+                    <div class="lc-profile-info">
+                        <h3 id="lcRealName" class="lc-real-name">Khushi Kumari</h3>
+                        <a href="https://leetcode.com/u/brs9Vhbczx/" target="_blank" class="lc-username-link">
+                            @brs9Vhbczx <i class="ph ph-arrow-square-out"></i>
+                        </a>
+                        <div class="lc-meta-badges">
+                            <span class="lc-meta-badge" id="lcCountry"><i class="ph ph-map-pin"></i> India</span>
+                            <span class="lc-meta-badge" id="lcSchool" style="display:none;"><i class="ph ph-graduation-cap"></i> <span id="lcSchoolName"></span></span>
+                        </div>
+                    </div>
+                    <div class="lc-ranking-pill">
+                        <div class="lc-rank-label">Global Rank</div>
+                        <div class="lc-rank-value" id="lcGlobalRank">—</div>
+                    </div>
+                </div>
+
+                <!-- Refresh Button -->
+                <button class="btn btn-primary lc-refresh-btn" id="lcRefreshBtn">
+                    <i class="ph ph-arrows-clockwise" id="lcRefreshIcon"></i> Refresh Stats
+                </button>
+            </div>
+
+            <!-- Quick Stats Strip -->
+            <div class="lc-stats-strip">
+                <div class="lc-strip-item">
+                    <div class="lc-strip-value" id="lcStreak">—</div>
+                    <div class="lc-strip-label">🔥 Streak</div>
+                </div>
+                <div class="lc-strip-item">
+                    <div class="lc-strip-value" id="lcContestRating">—</div>
+                    <div class="lc-strip-label">🏆 Contest Rating</div>
+                </div>
+                <div class="lc-strip-item">
+                    <div class="lc-strip-value" id="lcContests">—</div>
+                    <div class="lc-strip-label">📋 Contests</div>
+                </div>
+                <div class="lc-strip-item">
+                    <div class="lc-strip-value" id="lcTopPct">—</div>
+                    <div class="lc-strip-label">⭐ Top %</div>
+                </div>
+                <div class="lc-strip-item">
+                    <div class="lc-strip-value" id="lcAcceptRate">—</div>
+                    <div class="lc-strip-label">🎯 Accept Rate</div>
+                </div>
+                <div class="lc-strip-item">
+                    <div class="lc-strip-value" id="lcActiveDays">—</div>
+                    <div class="lc-strip-label">📅 Active Days</div>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="lc-main-grid">
+
+                <!-- Solved Progress Card -->
+                <div class="lc-card lc-progress-card">
+                    <h4 class="lc-card-title"><i class="ph ph-chart-bar"></i> Problem Progress</h4>
+
+                    <!-- Total ring + numbers -->
+                    <div class="lc-total-row">
+                        <div class="lc-donut-wrap">
+                            <svg class="lc-donut" viewBox="0 0 100 100">
+                                <circle class="lc-donut-bg" cx="50" cy="50" r="42"/>
+                                <circle class="lc-donut-easy"  cx="50" cy="50" r="42" id="lcDonutEasy"/>
+                                <circle class="lc-donut-medium" cx="50" cy="50" r="42" id="lcDonutMedium"/>
+                                <circle class="lc-donut-hard"  cx="50" cy="50" r="42" id="lcDonutHard"/>
+                            </svg>
+                            <div class="lc-donut-label">
+                                <span class="lc-donut-num" id="lcTotalSolved">0</span>
+                                <span class="lc-donut-sub">Solved</span>
+                            </div>
+                        </div>
+                        <div class="lc-diff-counts">
+                            <div class="lc-diff-row">
+                                <span class="lc-diff-dot easy"></span>
+                                <span class="lc-diff-name">Easy</span>
+                                <span class="lc-diff-val" id="lcEasySolved">0</span>
+                                <span class="lc-diff-total" id="lcEasyTotal">/—</span>
+                            </div>
+                            <div class="lc-diff-row">
+                                <span class="lc-diff-dot medium"></span>
+                                <span class="lc-diff-name">Medium</span>
+                                <span class="lc-diff-val" id="lcMediumSolved">0</span>
+                                <span class="lc-diff-total" id="lcMediumTotal">/—</span>
+                            </div>
+                            <div class="lc-diff-row">
+                                <span class="lc-diff-dot hard"></span>
+                                <span class="lc-diff-name">Hard</span>
+                                <span class="lc-diff-val" id="lcHardSolved">0</span>
+                                <span class="lc-diff-total" id="lcHardTotal">/—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress bars -->
+                    <div class="lc-bars">
+                        <div class="lc-bar-wrap">
+                            <div class="lc-bar-header">
+                                <span class="lc-diff-badge easy">Easy</span>
+                                <span class="lc-bar-pct" id="lcEasyPct">0%</span>
+                            </div>
+                            <div class="lc-bar-track"><div class="lc-bar-fill easy" id="lcEasyBar" style="width:0%"></div></div>
+                        </div>
+                        <div class="lc-bar-wrap">
+                            <div class="lc-bar-header">
+                                <span class="lc-diff-badge medium">Medium</span>
+                                <span class="lc-bar-pct" id="lcMediumPct">0%</span>
+                            </div>
+                            <div class="lc-bar-track"><div class="lc-bar-fill medium" id="lcMediumBar" style="width:0%"></div></div>
+                        </div>
+                        <div class="lc-bar-wrap">
+                            <div class="lc-bar-header">
+                                <span class="lc-diff-badge hard">Hard</span>
+                                <span class="lc-bar-pct" id="lcHardPct">0%</span>
+                            </div>
+                            <div class="lc-bar-track"><div class="lc-bar-fill hard" id="lcHardBar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Submissions Card -->
+                <div class="lc-card lc-submissions-card">
+                    <h4 class="lc-card-title"><i class="ph ph-check-circle"></i> Recent Accepted</h4>
+                    <div class="lc-submissions-list" id="lcSubmissionsList">
+                        <!-- Injected by JS -->
+                        <div class="lc-skeleton-list">
+                            <div class="lc-skeleton"></div><div class="lc-skeleton"></div>
+                            <div class="lc-skeleton"></div><div class="lc-skeleton"></div>
+                            <div class="lc-skeleton"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /lc-main-grid -->
+
+            <!-- Heatmap -->
+            <div class="lc-card lc-heatmap-card">
+                <div class="lc-heatmap-header">
+                    <h4 class="lc-card-title"><i class="ph ph-fire"></i> Submission Heatmap</h4>
+                    <span class="lc-heatmap-meta" id="lcHeatmapMeta">Last 52 weeks</span>
+                </div>
+                <div class="lc-heatmap-scroll">
+                    <div class="lc-heatmap-grid" id="lcHeatmap"></div>
+                </div>
+                <div class="lc-heatmap-legend">
+                    <span>Less</span>
+                    <div class="lc-legend-cell" style="background:#1e2235"></div>
+                    <div class="lc-legend-cell" style="background:#0e4429"></div>
+                    <div class="lc-legend-cell" style="background:#006d32"></div>
+                    <div class="lc-legend-cell" style="background:#26a641"></div>
+                    <div class="lc-legend-cell" style="background:#39d353"></div>
+                    <span>More</span>
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div class="lc-card lc-badges-card" id="lcBadgesCard" style="display:none">
+                <h4 class="lc-card-title"><i class="ph ph-medal"></i> Badges Earned <span class="lc-badge-count" id="lcBadgeCount"></span></h4>
+                <div class="lc-badges-grid" id="lcBadgesGrid"></div>
+            </div>
+
+            <!-- Error state (hidden by default) -->
+            <div class="lc-error" id="lcError" style="display:none">
+                <i class="ph ph-wifi-slash"></i>
+                <p id="lcErrorMsg">Could not load LeetCode data. Make sure the server is running.</p>
+                <button class="btn btn-outline" onclick="initLeetCodeSection()">Try Again</button>
+            </div>
+
         </div>
     </section>
 

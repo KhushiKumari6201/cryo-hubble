@@ -752,3 +752,485 @@ function initCurrentlyLearning() {
 }
 
 window.addEventListener('load', initCurrentlyLearning);
+
+// ============================================================
+//  LeetCode Analytics Section — Vanilla JS
+//  Fetches live data via the /api/leetcode proxy on the server
+// ============================================================
+
+const LC_USER = 'brs9Vhbczx';
+
+// ── GraphQL query helpers ────────────────────────────────────
+async function lcQuery(query, variables = {}) {
+    const res = await fetch('/api/leetcode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, variables })
+    });
+    if (!res.ok) throw new Error(`Proxy error ${res.status}`);
+    const json = await res.json();
+    if (json.errors) throw new Error(json.errors[0].message);
+    return json.data;
+}
+
+const PROFILE_QUERY = `
+  query userPublicProfile($username: String!) {
+    matchedUser(username: $username) {
+      username
+      profile { ranking userAvatar realName countryName school }
+      submitStats: submitStatsGlobal {
+        acSubmissionNum { difficulty count submissions }
+      }
+      badges { id displayName icon }
+      activeBadge { displayName }
+    }
+    allQuestionsCount { difficulty count }
+  }`;
+
+const CONTEST_QUERY = `
+  query userContestRankingInfo($username: String!) {
+    userContestRanking(username: $username) {
+      attendedContestsCount rating globalRanking topPercentage
+    }
+  }`;
+
+const SUBS_QUERY = `
+  query recentAcSubmissions($username: String!, $limit: Int!) {
+    recentAcSubmissionList(username: $username, limit: $limit) {
+      id title titleSlug timestamp lang
+    }
+  }`;
+
+const CALENDAR_QUERY = `
+  query userProfileCalendar($username: String!) {
+    matchedUser(username: $username) {
+      userCalendar { streak totalActiveDays submissionCalendar }
+    }
+  }`;
+
+// ── Helpers ──────────────────────────────────────────────────
+function lcEl(id) { return document.getElementById(id); }
+
+function lcTimeAgo(ts) {
+    const diff = Date.now() / 1000 - parseInt(ts);
+    if (diff < 60)    return 'just now';
+    if (diff < 3600)  return `${Math.floor(diff/60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+    if (diff < 604800) return `${Math.floor(diff/86400)}d ago`;
+    return new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+const LANG_COLORS = {
+    python3: '#3B82F6', python: '#3B82F6',
+    java: '#F97316', cpp: '#A855F7', c: '#6B7280',
+    javascript: '#EAB308', typescript: '#60A5FA',
+    rust: '#EF4444', golang: '#22D3EE', kotlin: '#7C3AED'
+};
+const LANG_LABELS = { python3: 'Py3', python: 'Py', java: 'Java', cpp: 'C++', javascript: 'JS', typescript: 'TS', rust: 'Rust', golang: 'Go', c: 'C', kotlin: 'Kotlin' };
+
+// ── Donut SVG helper ─────────────────────────────────────────
+function setDonutSegment(elId, fraction, dashOffset, color) {
+    const el = lcEl(elId);
+    if (!el) return;
+    const C = 2 * Math.PI * 42;   // circumference
+    el.style.strokeDasharray  = `${fraction * C} ${C}`;
+    el.style.strokeDashoffset = dashOffset;
+    el.style.stroke = color;
+}
+
+// ── Heatmap builder ────────────────────────────────────────────
+function buildHeatmap(calObj) {
+    const container = lcEl('lcHeatmap');
+    if (!container) return;
+
+    // ── Step 1: Convert every calObj timestamp → "YYYY-MM-DD" key ──
+    // LeetCode stores Unix timestamps (seconds). Converting via new Date()
+    // and using LOCAL date methods gives us stable day strings regardless
+    // of the server's timezone vs. the viewer's timezone.
+    const dateCount = {};
+    for (const [tsStr, cnt] of Object.entries(calObj)) {
+        const d = new Date(parseInt(tsStr, 10) * 1000);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        dateCount[key] = (dateCount[key] || 0) + cnt;
+    }
+
+    // ── Step 2: Build the grid ──────────────────────────────────
+    const isDark = document.body.classList.contains('dark-theme');
+    // Light = GitHub palette; Dark = dark-green GitHub palette
+    const COLORS = isDark
+        ? ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353']
+        : ['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127'];
+
+    const today = new Date();
+    // Start from 52 weeks ago, aligned to Sunday
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 7 * 52);
+    startDate.setDate(startDate.getDate() - startDate.getDay());
+
+    const CELL = 13, GAP = 3;
+    let html = `<div style="display:flex;gap:${GAP}px;">`;
+
+    for (let w = 0; w < 53; w++) {
+        html += `<div style="display:flex;flex-direction:column;gap:${GAP}px;">`;
+        for (let d = 0; d < 7; d++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + w * 7 + d);
+
+            if (date > today) {
+                html += `<div style="width:${CELL}px;height:${CELL}px;"></div>`;
+                continue;
+            }
+
+            // ── Step 3: Match using local "YYYY-MM-DD" key ─────
+            const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+            const count = dateCount[key] || 0;
+
+            // Pick intensity bucket
+            let bg;
+            if      (count === 0) bg = COLORS[0];
+            else if (count <= 2)  bg = COLORS[1];
+            else if (count <= 5)  bg = COLORS[2];
+            else if (count <= 9)  bg = COLORS[3];
+            else                  bg = COLORS[4];
+
+            const label = `${count} submission${count !== 1 ? 's' : ''} on ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            html += `<div class="lc-heatmap-cell" title="${label}" data-count="${count}" data-date="${key}" style="width:${CELL}px;height:${CELL}px;background:${bg};border-radius:3px;cursor:pointer;"></div>`;
+        }
+        html += '</div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// ── Progress bar + donut renderer ────────────────────────────
+function renderProgress(solved, totals) {
+    const easy   = solved.easy,   easyT   = totals.easy;
+    const medium = solved.medium, mediumT = totals.medium;
+    const hard   = solved.hard,   hardT   = totals.hard;
+    const total  = solved.all;
+    const C = 2 * Math.PI * 42;
+
+    // Donut: stacked segments
+    const easyF   = easyT   > 0 ? easy   / totals.all : 0;
+    const mediumF = mediumT > 0 ? medium / totals.all : 0;
+    const hardF   = hardT   > 0 ? hard   / totals.all : 0;
+
+    const easyLen   = easyF   * C;
+    const mediumLen = mediumF * C;
+    const hardLen   = hardF   * C;
+
+    // Easy at top (offset = 0)
+    const easyEl = lcEl('lcDonutEasy');
+    if (easyEl) {
+        easyEl.style.strokeDasharray  = `${easyLen} ${C}`;
+        easyEl.style.strokeDashoffset = 0;
+        easyEl.style.stroke = '#00B8A3';
+    }
+    // Medium after easy
+    const medEl = lcEl('lcDonutMedium');
+    if (medEl) {
+        medEl.style.strokeDasharray  = `${mediumLen} ${C}`;
+        medEl.style.strokeDashoffset = -easyLen;
+        medEl.style.stroke = '#FFB800';
+    }
+    // Hard after medium
+    const hardEl = lcEl('lcDonutHard');
+    if (hardEl) {
+        hardEl.style.strokeDasharray  = `${hardLen} ${C}`;
+        hardEl.style.strokeDashoffset = -(easyLen + mediumLen);
+        hardEl.style.stroke = '#EF4743';
+    }
+
+    lcEl('lcTotalSolved').textContent = total;
+    lcEl('lcEasySolved').textContent  = easy;
+    lcEl('lcEasyTotal').textContent   = `/${easyT}`;
+    lcEl('lcMediumSolved').textContent = medium;
+    lcEl('lcMediumTotal').textContent  = `/${mediumT}`;
+    lcEl('lcHardSolved').textContent  = hard;
+    lcEl('lcHardTotal').textContent   = `/${hardT}`;
+
+    // Animated progress bars (delayed)
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            const ePct = easyT > 0 ? ((easy/easyT)*100).toFixed(1) : 0;
+            const mPct = mediumT > 0 ? ((medium/mediumT)*100).toFixed(1) : 0;
+            const hPct = hardT > 0 ? ((hard/hardT)*100).toFixed(1) : 0;
+
+            lcEl('lcEasyBar').style.width   = ePct + '%';
+            lcEl('lcMediumBar').style.width = mPct + '%';
+            lcEl('lcHardBar').style.width   = hPct + '%';
+            lcEl('lcEasyPct').textContent   = ePct + '%';
+            lcEl('lcMediumPct').textContent = mPct + '%';
+            lcEl('lcHardPct').textContent   = hPct + '%';
+        }, 300);
+    });
+}
+
+// ── Submissions renderer ──────────────────────────────────────
+function renderSubmissions(subs) {
+    const list = lcEl('lcSubmissionsList');
+    if (!list || !subs.length) return;
+    list.innerHTML = subs.map((s, i) => {
+        const lang = s.lang?.toLowerCase() || '';
+        const color = LANG_COLORS[lang] || '#6B7280';
+        const label = LANG_LABELS[lang] || lang;
+        return `
+        <div class="lc-sub-row">
+            <span class="lc-sub-num">${i+1}</span>
+            <a href="https://leetcode.com/problems/${s.titleSlug}/" target="_blank" class="lc-sub-title">${s.title}</a>
+            <span class="lc-sub-lang" style="background:${color}22;color:${color};border-color:${color}44">${label}</span>
+            <span class="lc-sub-time">${lcTimeAgo(s.timestamp)}</span>
+        </div>`;
+    }).join('');
+}
+
+// ── Badges renderer ───────────────────────────────────────────
+function renderBadges(badges, activeBadge) {
+    if (!badges || badges.length === 0) return;
+    const grid = lcEl('lcBadgesGrid');
+    const card = lcEl('lcBadgesCard');
+    const count = lcEl('lcBadgeCount');
+    if (!grid || !card) return;
+
+    count.textContent = badges.length;
+    grid.innerHTML = badges.map(b => {
+        const isActive = activeBadge?.displayName === b.displayName;
+        // Shorten "LeetCoding Challenge" to fit nicely
+        const shortName = b.displayName
+            .replace('LeetCoding Challenge', 'Challenge')
+            .replace('LeetCode', 'LC');
+        return `
+        <div class="lc-badge-item${isActive ? ' active' : ''}" title="${b.displayName}">
+            <div class="lc-badge-icon-wrap">
+                ${b.icon ? `<img src="${b.icon}" alt="${b.displayName}" class="lc-badge-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="lc-badge-emoji" style="display:none">🏅</div>` : '<div class="lc-badge-emoji">🏅</div>'}
+            </div>
+            <div class="lc-badge-info">
+                <span class="lc-badge-name">${shortName}</span>
+                ${isActive ? '<span class="lc-badge-active-pill">Active</span>' : ''}
+            </div>
+        </div>`;
+    }).join('');
+    card.style.display = 'block';
+}
+
+// ── Show / hide error ─────────────────────────────────────────
+function showLcError(msg) {
+    const err = lcEl('lcError');
+    if (err) { lcEl('lcErrorMsg').textContent = msg; err.style.display = 'flex'; }
+}
+function hideLcError() {
+    const err = lcEl('lcError');
+    if (err) err.style.display = 'none';
+}
+
+// ── Render LeetCode Dashboard UI from data object ──────────────
+function renderLeetCodeUI(data) {
+    // ── Profile ──────────────────────────────────────────
+    if (data.profile && data.profile.matchedUser) {
+        const u = data.profile.matchedUser;
+        const p = u.profile;
+
+        // Avatar
+        const avatarEl  = lcEl('lcAvatar');
+        const fallbackEl = lcEl('lcAvatarFallback');
+        if (p.userAvatar && avatarEl) {
+            avatarEl.src = p.userAvatar;
+            avatarEl.style.display = 'block';
+            if (fallbackEl) fallbackEl.style.display = 'none';
+        }
+
+        // Name / country / school
+        if (p.realName)   lcEl('lcRealName').textContent = p.realName;
+        if (p.countryName) lcEl('lcCountry').innerHTML = `<i class="ph ph-map-pin"></i> ${p.countryName}`;
+        if (p.school) {
+            lcEl('lcSchoolName').textContent = p.school;
+            lcEl('lcSchool').style.display = 'inline-flex';
+        }
+        if (p.ranking && p.ranking < 9999999) {
+            lcEl('lcGlobalRank').textContent = '#' + p.ranking.toLocaleString();
+        }
+
+        // Solved stats
+        const stats = u.submitStats.acSubmissionNum;
+        const allQ  = data.profile.allQuestionsCount;
+        const toMap  = (arr) => Object.fromEntries(arr.map(s => [s.difficulty, s.count]));
+        const solved = toMap(stats);
+        const totals = toMap(allQ);
+
+        const solvedAll = solved.All || 0;
+        renderProgress(
+            { all: solvedAll, easy: solved.Easy || 0, medium: solved.Medium || 0, hard: solved.Hard || 0 },
+            { all: totals.All || 0, easy: totals.Easy || 0, medium: totals.Medium || 0, hard: totals.Hard || 0 }
+        );
+
+        // Update home page DSA stats counter
+        const dsaCounter = document.querySelector('.stats-grid .stat-card:first-child .counter');
+        if (dsaCounter) {
+            dsaCounter.setAttribute('data-target', solvedAll);
+            if (dsaCounter.textContent !== '0') {
+                dsaCounter.textContent = solvedAll + '+';
+            }
+        }
+
+        // Acceptance rate
+        const allEntry = stats.find(s => s.difficulty === 'All');
+        if (allEntry && allEntry.submissions > 0) {
+            lcEl('lcAcceptRate').textContent = ((allEntry.count / allEntry.submissions) * 100).toFixed(1) + '%';
+        }
+
+        // Badges
+        renderBadges(u.badges, u.activeBadge);
+    }
+
+    // ── Contest ───────────────────────────────────────────
+    if (data.contest && data.contest.userContestRanking) {
+        const cr = data.contest.userContestRanking;
+        if (cr.rating)                lcEl('lcContestRating').textContent = Math.round(cr.rating);
+        if (cr.attendedContestsCount) lcEl('lcContests').textContent = cr.attendedContestsCount;
+        if (cr.topPercentage)         lcEl('lcTopPct').textContent = cr.topPercentage.toFixed(1) + '%';
+    }
+
+    // ── Recent submissions ─────────────────────────────────
+    if (data.submissions && data.submissions.recentAcSubmissionList) {
+        renderSubmissions(data.submissions.recentAcSubmissionList);
+    }
+
+    // ── Calendar / heatmap ─────────────────────────────────
+    if (data.calendar && data.calendar.matchedUser && data.calendar.matchedUser.userCalendar) {
+        const cal = data.calendar.matchedUser.userCalendar;
+        if (cal.streak)         lcEl('lcStreak').textContent = cal.streak + ' days';
+        if (cal.totalActiveDays) lcEl('lcActiveDays').textContent = cal.totalActiveDays;
+
+        let calObj = {};
+        try { calObj = JSON.parse(cal.submissionCalendar); } catch {}
+        buildHeatmap(calObj);
+        updateHeatmapLegend(document.body.classList.contains('dark-theme'));
+    }
+}
+
+// ── Load cached LeetCode data from localStorage ────────────────
+function loadCachedLeetCodeData() {
+    try {
+        const cached = localStorage.getItem('leetcode_dashboard_cache');
+        if (cached) {
+            const dataObj = JSON.parse(cached);
+            renderLeetCodeUI(dataObj);
+        }
+    } catch (e) {
+        console.error('Error loading cached LeetCode data:', e);
+    }
+}
+
+// ── Main fetch & render function ─────────────────────────────
+async function initLeetCodeSection() {
+    hideLcError();
+
+    const refreshBtn  = lcEl('lcRefreshBtn');
+    const refreshIcon = lcEl('lcRefreshIcon');
+    if (refreshBtn) refreshBtn.disabled = true;
+    if (refreshIcon) refreshIcon.classList.add('ph-spin');
+
+    try {
+        // Fire all requests in parallel
+        const [profileRes, contestRes, subsRes, calRes] = await Promise.allSettled([
+            lcQuery(PROFILE_QUERY,  { username: LC_USER }),
+            lcQuery(CONTEST_QUERY,  { username: LC_USER }),
+            lcQuery(SUBS_QUERY,     { username: LC_USER, limit: 15 }),
+            lcQuery(CALENDAR_QUERY, { username: LC_USER })
+        ]);
+
+        if (profileRes.status === 'fulfilled' && profileRes.value?.matchedUser) {
+            const dataObj = {
+                profile: profileRes.value,
+                contest: contestRes.status === 'fulfilled' && contestRes.value?.userContestRanking ? contestRes.value : null,
+                submissions: subsRes.status === 'fulfilled' ? subsRes.value : null,
+                calendar: calRes.status === 'fulfilled' && calRes.value?.matchedUser?.userCalendar ? calRes.value : null
+            };
+
+            // Render fresh data to UI
+            renderLeetCodeUI(dataObj);
+
+            // Store in cache
+            localStorage.setItem('leetcode_dashboard_cache', JSON.stringify(dataObj));
+        } else {
+            showLcError(profileRes.reason?.message || 'Could not load profile.');
+        }
+
+    } catch (err) {
+        console.error('LeetCode section error:', err);
+        showLcError(err.message || 'Unexpected error loading LeetCode data.');
+    } finally {
+        if (refreshBtn) refreshBtn.disabled = false;
+        if (refreshIcon) refreshIcon.classList.remove('ph-spin');
+    }
+}
+
+// ── Wire up Refresh button & auto-load on section scroll ──────
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Try to load cached data instantly
+    loadCachedLeetCodeData();
+
+    const refreshBtn = lcEl('lcRefreshBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', initLeetCodeSection);
+    }
+
+    // Auto-fetch when #leetcode section scrolls into view (once)
+    const lcSection = document.getElementById('leetcode');
+    if (lcSection) {
+        let loaded = false;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !loaded) {
+                loaded = true;
+                initLeetCodeSection();
+                observer.disconnect();
+            }
+        }, { threshold: 0.1 });
+        observer.observe(lcSection);
+    }
+
+    // Re-render heatmap when theme toggles (colors are theme-specific)
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            // Wait one tick for the class to be applied, then rebuild
+            setTimeout(() => {
+                const heatmapEl = lcEl('lcHeatmap');
+                if (heatmapEl && heatmapEl.innerHTML.trim() !== '') {
+                    // Parse existing calendar data from the cells and rebuild
+                    const cells = heatmapEl.querySelectorAll('.lc-heatmap-cell');
+                    if (cells.length > 0) {
+                        const isDark = document.body.classList.contains('dark-theme');
+                        const COLORS = isDark
+                            ? ['#1e2235', '#0e4429', '#006d32', '#26a641', '#39d353']
+                            : ['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127'];
+                        cells.forEach(cell => {
+                            const count = parseInt(cell.dataset.count || '0');
+                            let bg;
+                            if      (count === 0)  bg = COLORS[0];
+                            else if (count <= 2)   bg = COLORS[1];
+                            else if (count <= 5)   bg = COLORS[2];
+                            else if (count <= 9)   bg = COLORS[3];
+                            else                   bg = COLORS[4];
+                            cell.style.background = bg;
+                        });
+                        // Also update legend colors
+                        updateHeatmapLegend(isDark);
+                    }
+                }
+            }, 50);
+        });
+    }
+});
+
+// ── Update heatmap legend colors ─────────────────────────────
+function updateHeatmapLegend(isDark) {
+    const cells = document.querySelectorAll('.lc-legend-cell');
+    const DARK  = ['#1e2235', '#0e4429', '#006d32', '#26a641', '#39d353'];
+    const LIGHT = ['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127'];
+    const colors = isDark ? DARK : LIGHT;
+    cells.forEach((cell, i) => { if (colors[i]) cell.style.background = colors[i]; });
+}
+
+

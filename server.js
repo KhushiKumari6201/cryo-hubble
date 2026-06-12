@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -196,6 +197,89 @@ app.post('/api/chat', async (req, res) => {
         // Graceful degradation: Fall back to local helper if API fails
         const reply = matchFallbackResponse(message);
         return res.json({ reply, isDemo: true, error: true });
+    }
+});
+
+// ── LeetCode GraphQL Proxy with File Cache ──────────────────────
+const CACHE_FILE = path.join(__dirname, 'leetcode_cache.json');
+
+function readCache() {
+    try {
+        if (fs.existsSync(CACHE_FILE)) {
+            return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+        }
+    } catch (e) {
+        console.error('Error reading LeetCode cache file:', e.message);
+    }
+    return {};
+}
+
+function writeCache(cache) {
+    try {
+        fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), 'utf8');
+    } catch (e) {
+        console.error('Error writing LeetCode cache file:', e.message);
+    }
+}
+
+app.post('/api/leetcode', async (req, res) => {
+    const { query, variables } = req.body;
+    if (!query) return res.status(400).json({ error: 'Query required.' });
+
+    // Identify query to cache
+    let cacheKey = null;
+    if (query.includes('userPublicProfile')) cacheKey = 'profile';
+    else if (query.includes('userContestRankingInfo')) cacheKey = 'contest';
+    else if (query.includes('recentAcSubmissions')) cacheKey = 'submissions';
+    else if (query.includes('userProfileCalendar')) cacheKey = 'calendar';
+
+    try {
+        const response = await fetch('https://leetcode.com/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
+                'Referer': 'https://leetcode.com/',
+                'Origin': 'https://leetcode.com'
+            },
+            body: JSON.stringify({ query, variables })
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.warn(`LeetCode API returned status ${response.status}. Attempting server cache fallback.`);
+            
+            if (cacheKey) {
+                const cache = readCache();
+                if (cache[cacheKey]) {
+                    return res.json({ data: cache[cacheKey] });
+                }
+            }
+            return res.status(response.status).json({ error: `LeetCode API returned ${response.status}`, details: text.slice(0, 200) });
+        }
+
+        const data = await response.json();
+
+        // Update the server cache if fetch is successful
+        if (cacheKey && data.data) {
+            const cache = readCache();
+            cache[cacheKey] = data.data;
+            writeCache(cache);
+        }
+
+        return res.json(data);
+    } catch (err) {
+        console.error('LeetCode Proxy Error:', err.message);
+        
+        // Fall back to server cache on network/fetch failures
+        if (cacheKey) {
+            const cache = readCache();
+            if (cache[cacheKey]) {
+                return res.json({ data: cache[cacheKey] });
+            }
+        }
+        return res.status(502).json({ error: 'Failed to reach LeetCode API.', details: err.message });
     }
 });
 
