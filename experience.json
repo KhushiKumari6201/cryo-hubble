@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "role": "Web Development Intern",
+    "company": "Preppright EdTech Pvt. Ltd.",
+    "duration": "May 2025 - July 2025",
+    "location": "Remote",
+    "icon": "💻",
+    "bullets": [
+      "Developed responsive web pages using HTML, CSS, and JavaScript.",
+      "Assisted in building basic frontend components and layouts.",
+      "Worked on form handling, validation, and UI improvements.",
+      "Gained hands-on experience with real-world web development tasks."
+    ],
+    "tech": ["HTML", "CSS", "JavaScript", "Responsive Design"]
+  },
+  {
+    "id": 2,
+    "role": "AI & Machine Learning Intern",
+    "company": "Teachnook",
+    "duration": "Jan 2025 - March 2025",
+    "location": "Remote",
+    "icon": "🤖",
+    "bullets": [
+      "Learned fundamentals of Python programming and Machine Learning concepts.",
+      "Worked on data preprocessing and basic ML models.",
+      "Implemented simple algorithms under guided mentorship.",
+      "Completed internship tasks and assessments successfully."
+    ],
+    "tech": ["Python", "Machine Learning", "Algorithms", "Data Preprocessing"]
+  }
+]

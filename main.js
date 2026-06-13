@@ -88,7 +88,7 @@ const filterBtns = document.querySelectorAll(".filter-btn");
 // Extreme 3D Card Effect
 function init3DEffect() {
     document.addEventListener("mousemove", (e) => {
-        const cards = document.querySelectorAll(".project-card, .stat-card, .profile-container, .certification-card, .achievement-card");
+        const cards = document.querySelectorAll(".project-card, .stat-card, .profile-container, .certification-card, .achievement-card, .timeline-card");
         const x = e.clientX;
         const y = e.clientY;
 
@@ -268,6 +268,47 @@ function displayAchievements(achievements) {
     `).join('');
 }
 
+// Fetch and Display Experience
+const experienceTimeline = document.querySelector("#experienceTimeline");
+
+async function fetchExperience() {
+    try {
+        const response = await fetch("experience.json");
+        const experience = await response.json();
+        displayExperience(experience);
+    } catch (err) {
+        console.error("Error fetching experience:", err);
+    }
+}
+
+function displayExperience(experience) {
+    if (!experienceTimeline) return;
+    
+    experienceTimeline.innerHTML = experience.map(exp => `
+        <div class="timeline-item reveal">
+            <div class="timeline-dot">${exp.icon}</div>
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <div>
+                        <h4 class="timeline-role">${exp.role}</h4>
+                        <div class="timeline-company">${exp.company}</div>
+                    </div>
+                </div>
+                <div class="timeline-meta">
+                    <span><i class="ph ph-calendar"></i> ${exp.duration}</span>
+                    <span><i class="ph ph-map-pin"></i> ${exp.location}</span>
+                </div>
+                <ul class="timeline-bullets">
+                    ${exp.bullets.map(b => `<li>${b}</li>`).join('')}
+                </ul>
+                <div class="timeline-techs">
+                    ${exp.tech.map(t => `<span class="timeline-tech">${t}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
 // Certificate Modal Functions
 function openCertificateModal(imageSrc, title, issuer, date) {
     const modal = document.querySelector('#certificateModal');
@@ -409,6 +450,7 @@ sr.reveal('.hero-text, .hero-image', { origin: 'bottom', interval: 200 });
 sr.reveal('.about-image-side, .about-content', { origin: 'left', interval: 200 });
 sr.reveal('.skills-column', { origin: 'bottom', interval: 200 });
 sr.reveal('.section-header', { interval: 100 });
+sr.reveal('.timeline-item', { interval: 150 });
 sr.reveal('.certification-card, .achievement-card', { interval: 100 });
 sr.reveal('.stat-card', { 
     interval: 100,
@@ -431,6 +473,7 @@ window.addEventListener("load", () => {
         fetchProjects();
         fetchCertifications();
         fetchAchievements();
+        fetchExperience();
         init3DEffect();
         initAIChatbot();
     }, 500);
