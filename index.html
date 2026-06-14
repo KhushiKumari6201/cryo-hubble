@@ -23,9 +23,44 @@
 </head>
 
 <body>
-    <!-- Loader -->
-    <div class="loader-wrapper">
-        <div class="loader"></div>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <!-- Floating Particles Background -->
+        <div class="splash-particles">
+            <div class="particle particle-1"></div>
+            <div class="particle particle-2"></div>
+            <div class="particle particle-3"></div>
+            <div class="particle particle-4"></div>
+            <div class="particle particle-5"></div>
+            <div class="particle particle-6"></div>
+        </div>
+
+        <div class="splash-content">
+            <!-- 3D Cube with Pulsing Glow -->
+            <div class="cube-container">
+                <div class="cube-glow" id="cubeGlow"></div>
+                <div class="cube" id="splashCube">
+                    <div class="cube-face cube-front">KK</div>
+                    <div class="cube-face cube-back">KK</div>
+                    <div class="cube-face cube-right">KK</div>
+                    <div class="cube-face cube-left">KK</div>
+                    <div class="cube-face cube-top">KK</div>
+                    <div class="cube-face cube-bottom">KK</div>
+                </div>
+            </div>
+
+            <div class="splash-label" id="splashLabel"></div>
+
+            <!-- Progress Bar with Percentage -->
+            <div class="progress-section">
+                <div class="progress-bar-container">
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                </div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+        </div>
     </div>
 
     <!-- Background Layers -->

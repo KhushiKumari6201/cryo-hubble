@@ -1,3 +1,59 @@
+// ===== SPLASH SCREEN LOGIC =====
+(function initSplashScreen() {
+    const splashScreen = document.getElementById('splashScreen');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const progressPercentage = document.getElementById('progressPercentage');
+    const splashLabel = document.getElementById('splashLabel');
+    
+    if (!splashScreen) return;
+    
+    // Animate label with letter-by-letter effect
+    const labelText = 'PORTFOLIO LOADING';
+    const charDelay = 50; // ms between each letter
+    
+    splashLabel.innerHTML = '';
+    labelText.split('').forEach((char, index) => {
+        const span = document.createElement('span');
+        span.className = 'label-char';
+        span.textContent = char === ' ' ? '\u00A0' : char; // Non-breaking space
+        span.style.animationDelay = (index * charDelay) + 'ms';
+        splashLabel.appendChild(span);
+    });
+    
+    // Display for exactly 6 seconds
+    const duration = 6000; // 6 seconds
+    const startTime = Date.now();
+    
+    function animateProgress() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min((elapsed / duration) * 100, 100);
+        
+        // Update progress bar fill
+        progressBarFill.style.width = progress + '%';
+        
+        // Update percentage counter
+        progressPercentage.textContent = Math.floor(progress) + '%';
+        
+        if (elapsed < duration) {
+            requestAnimationFrame(animateProgress);
+        } else {
+            // Progress complete, now fade out splash screen
+            splashScreen.classList.add('fade-out');
+            
+            // Trigger main content fade-in after splash fades
+            setTimeout(() => {
+                document.body.classList.add('splash-complete');
+                // Remove splash screen from DOM
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 900);
+            }, 100);
+        }
+    }
+    
+    animateProgress();
+})();
+
 // Typing Animation Logic
 const typingText = document.querySelector("#typing-text");
 const phrases = ["a Web Developer", "a Java Programmer", "a Problem Solver"];
@@ -466,9 +522,14 @@ sr.reveal('.stat-card', {
 // Loader
 window.addEventListener("load", () => {
     const loader = document.querySelector(".loader-wrapper");
-    loader.style.opacity = "0";
+    if (loader) {
+        loader.style.opacity = "0";
+        setTimeout(() => {
+            loader.style.display = "none";
+        }, 500);
+    }
+    // Initialize all dynamic sections regardless of loader presence
     setTimeout(() => {
-        loader.style.display = "none";
         type();
         fetchProjects();
         fetchCertifications();
@@ -476,7 +537,7 @@ window.addEventListener("load", () => {
         fetchExperience();
         init3DEffect();
         initAIChatbot();
-    }, 500);
+    }, loader ? 500 : 0);
 });
 
 // Form Submission (Simulated)
