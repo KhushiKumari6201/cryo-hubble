@@ -47,6 +47,17 @@
                 setTimeout(() => {
                     splashScreen.style.display = 'none';
                 }, 900);
+                
+                // Clear transform on body after animation ends to restore viewport positioning context for fixed elements (e.g. modals)
+                const onBodyAnimationEnd = (e) => {
+                    if (e.target === document.body && e.animationName === 'main-content-slide-up') {
+                        document.body.style.animation = 'none';
+                        document.body.style.transform = 'none';
+                        document.body.style.opacity = '1';
+                        document.body.removeEventListener('animationend', onBodyAnimationEnd);
+                    }
+                };
+                document.body.addEventListener('animationend', onBodyAnimationEnd);
             }, 100);
         }
     }
@@ -274,27 +285,31 @@ function displayCertifications(certifications) {
             <div class="certification-issuer">${cert.issuer}</div>
             <div class="certification-date">${cert.date}</div>
             <div class="certification-status">${cert.status}</div>
-            <a href="#" class="certification-view">
+            <a href="javascript:void(0)" class="certification-view">
                 View Certificate <i class="ph ph-arrow-right"></i>
             </a>
         </div>
     `).join('');
-    
-    // Add click event listeners to all "View Certificate" buttons
-    document.querySelectorAll('.certification-view').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            const card = link.closest('.certification-card');
-            const certName = card.getAttribute('data-cert-name');
-            const certIssuer = card.getAttribute('data-cert-issuer');
-            const certDate = card.getAttribute('data-cert-date');
-            const certImage = card.getAttribute('data-cert-image');
-            
-            openCertificateModal(certImage, certName, certIssuer, certDate);
-        });
-    });
 }
+
+// Event delegation for certificate viewing — works on dynamically created elements
+document.addEventListener('click', (e) => {
+    const viewLink = e.target.closest('.certification-view');
+    if (!viewLink) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const card = viewLink.closest('.certification-card');
+    if (!card) return;
+    
+    const certName = card.getAttribute('data-cert-name');
+    const certIssuer = card.getAttribute('data-cert-issuer');
+    const certDate = card.getAttribute('data-cert-date');
+    const certImage = card.getAttribute('data-cert-image');
+    
+    openCertificateModal(certImage, certName, certIssuer, certDate);
+});
 
 // Fetch and Display Achievements
 const achievementsGrid = document.querySelector("#achievementsGrid");
@@ -1338,3 +1353,226 @@ function updateHeatmapLegend(isDark) {
 }
 
 
+
+
+// ═══════════════════════════════════════════════════════
+// Voice Navigation Logic
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    const micBtn = document.getElementById('voice-mic-btn');
+    const statusText = document.getElementById('voice-status');
+
+    if (!micBtn || !statusText) return;
+
+        // LIVE DEBUG BOX REMOVED
+    function logDebug(msg) {
+        console.log("[VoiceDebug]", msg);
+    }
+
+    logDebug("Voice Navigation Script Initialized");
+
+    // SECURE CONTEXT CHECK
+    if (!window.isSecureContext) {
+        const warning = "Voice navigation requires HTTPS or localhost. It will not work on this connection.";
+        logDebug("ERROR: " + warning);
+        showStatus("Insecure Context! See debug box.", 10000);
+        micBtn.style.opacity = '0.5';
+        micBtn.style.cursor = 'not-allowed';
+        return; // Stop initialization entirely
+    }
+
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        logDebug("ERROR: Speech Recognition API not supported in this browser.");
+        statusText.textContent = "Voice nav not supported";
+        micBtn.style.opacity = '0.5';
+        micBtn.style.cursor = 'not-allowed';
+        return;
+    }
+
+    // SINGLE RECOGNITION INSTANCE
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false; // Stop listening automatically after detecting a pause
+    recognition.interimResults = true; // Capture speech as it happens
+    recognition.lang = 'en-US';
+
+    let isListening = false;
+    let statusTimeout;
+    let silenceTimer; 
+    let hasReceivedResults = false;
+
+    // Helper to show status message
+    function showStatus(text, duration = 3000) {
+        statusText.textContent = text;
+        statusText.classList.add('show');
+        
+        clearTimeout(statusTimeout);
+        if (duration > 0) {
+            statusTimeout = setTimeout(() => {
+                statusText.classList.remove('show');
+            }, duration);
+        }
+    }
+
+    // Process parsed text to find a matching command
+    function processCommand(rawText) {
+        const text = rawText.toLowerCase().trim();
+        let matchedCmd = null;
+
+        // Command mapping using includes for partial keyword matches
+        if (text.includes('about')) {
+            document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'about';
+        } else if (text.includes('project')) {
+            document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'projects';
+        } else if (text.includes('skill')) {
+            document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'skills';
+        } else if (text.includes('experience')) {
+            document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'experience';
+        } else if (text.includes('certif')) { // catches certificate or certification
+            document.getElementById('certifications')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'certifications';
+        } else if (text.includes('achieve')) {
+            document.getElementById('achievements')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'achievements';
+        } else if (text.includes('stat')) {
+            document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'stats';
+        } else if (text.includes('leetcode') || text.includes('code')) {
+            document.getElementById('leetcode')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'leetcode';
+        } else if (text.includes('contact')) {
+            document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+            matchedCmd = 'contact';
+        } else if (text.includes('top') || text.includes('home')) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            matchedCmd = 'scroll to top';
+        } else if (text.includes('down')) {
+            window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+            matchedCmd = 'scroll down';
+        } else if (text.includes('dark')) {
+            document.body.classList.add('dark-mode');
+            matchedCmd = 'dark mode';
+        } else if (text.includes('light')) {
+            document.body.classList.remove('dark-mode');
+            matchedCmd = 'light mode';
+        } else if (text.includes('resume') || text.includes('cv')) {
+            window.open('assets/resume.pdf', '_blank');
+            matchedCmd = 'open resume';
+        }
+
+        if (matchedCmd) {
+            micBtn.classList.add('processing');
+            logDebug(`Command matched: ${matchedCmd}`);
+            showStatus(`Executed: "${matchedCmd}"`, 2000);
+            setTimeout(() => micBtn.classList.remove('processing'), 1000);
+        } else {
+            logDebug(`No command matched in: ${text}`);
+            showStatus(`Heard: "${text}" (No match)`, 3000);
+        }
+    }
+
+    // EVENT BINDING BEFORE CALLING START
+    recognition.onstart = () => {
+        logDebug("Recognition started");
+        isListening = true;
+        hasReceivedResults = false;
+        micBtn.classList.add('listening');
+        micBtn.classList.remove('processing');
+        showStatus("Listening...", 0); 
+    };
+
+    recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            } else {
+                interimTranscript += event.results[i][0].transcript;
+            }
+        }
+        
+        hasReceivedResults = true;
+        
+        if (interimTranscript) {
+            logDebug(`Interim: ${interimTranscript}`);
+            showStatus(`Heard: "${interimTranscript}"`, 0);
+        }
+
+        // Auto-stop after 1.5s of silence
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+            if (isListening) {
+                recognition.stop();
+            }
+        }, 1500); 
+
+        // If we got a final result, log and process it
+        if (finalTranscript) {
+            logDebug(`Final transcript: ${finalTranscript}`);
+            processCommand(finalTranscript);
+            recognition.stop(); // Stop listening after command execution
+        }
+    };
+
+    recognition.onerror = (event) => {
+        if (event.error === 'no-speech') {
+            if (hasReceivedResults) {
+                // Ignore no-speech if we already heard something previously
+                return;
+            }
+            logDebug("Error: no-speech");
+            showStatus("Didn't hear anything, try again.", 3000);
+        } else if (event.error === 'not-allowed') {
+            logDebug("Error: not-allowed");
+            showStatus("Microphone access blocked. Allow in browser settings.", 5000);
+        } else if (event.error === 'aborted') {
+            logDebug("Error: aborted");
+            showStatus("Stopped listening", 1000);
+        } else {
+            logDebug(`Error: ${event.error}`);
+            showStatus(`Error: ${event.error}`, 3000);
+        }
+        
+        isListening = false;
+        micBtn.classList.remove('listening');
+    };
+
+    recognition.onend = () => {
+        logDebug("Recognition ended");
+        isListening = false;
+        micBtn.classList.remove('listening');
+        clearTimeout(silenceTimer);
+        
+        if (statusText.textContent === 'Listening...' || statusText.textContent === 'Preparing mic...') {
+            statusText.classList.remove('show');
+        }
+    };
+
+    // START/STOP LOGIC
+    micBtn.addEventListener('click', async () => {
+        logDebug("Mic clicked");
+
+        if (isListening) {
+            recognition.stop();
+        } else {
+            showStatus("Listening...", 0);
+            try {
+                recognition.start();
+            } catch (err) {
+                if (err.name === 'InvalidStateError') {
+                    logDebug("Caught InvalidStateError (Already running).");
+                } else {
+                    logDebug(`Start Error: ${err.name} - ${err.message}`);
+                }
+            }
+        }
+    });
+});
